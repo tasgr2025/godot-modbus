@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="ModbusClientRtu" inherits="ModbusRtu" version="4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>
+		Клиент Modbus-RTU
+	</brief_description>
+	<description>
+		Обеспечивает обмен данными по последовательному порту в соответствии с протоколом Modbus.
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member>
+		</member>
+	</members>
+	<methods>
+		<method name="read">
+			<return type="Error"/>
+			<param index="0" name="base_addr" type="int"/>
+			<param index="1" name="count" type="int"/>
+			<param index="2" name="resp" type="Array"/>
+			<description>
+				Производит чтение регистров.[/br]
+				[param base_addr] - Начальный адрес регистров.[/br]
+				[param count] - Количество регистров.[/br]
+				[param resp] - После вызова, содержит прочитанные из регистров значения.[/br]
+				Возвращает [code]Error.OK[/code] если операция прошла успешно и [code]Error.FAILED[/code] если иначе.[/br]
+			</description>
+		</method>
+		<method name="read_bits">
+			<return type="Error"/>
+			<description>
+				Производит последовательное чтение одноразрядных регистров начиная с базового адреса.[/br]
+				[param base_addr] - Начальный адрес регистров.[/br]
+				[param count] - Количество регистров.[/br]
+				[param resp] - После вызова, содержит прочитанные из регистров значения.[/br]
+				Возвращает [code]Error.OK[/code] если операция прошла успешно и [code]Error.FAILED[/code] если иначе.[/br]
+			</description>
+		</method>
+		<method name="read_input">
+			<return type="Error"/>
+			<description>
+				Производит последовательное чтение содержания входных регистров начиная с базового адреса.[/br]
+				[param base_addr] - Начальный адрес регистров.[/br]
+				[param count] - Количество регистров.[/br]
+				[param resp] - После вызова, содержит прочитанные из регистров значения.[/br]
+				Возвращает [code]Error.OK[/code] если операция прошла успешно и [code]Error.FAILED[/code] если иначе.[/br]
+			</description>
+		</method>
+		<method name="write">
+			<return type="Error"/>
+			<description>
+				Производит последовательную запись данных в регистры начиная с базового адреса.[/br]
+				[param base_addr] - Начальный адрес регистров.[/br]
+				[param resp] - Данные для записи.[/br]
+				Возвращает [code]Error.OK[/code] если операция прошла успешно и [code]Error.FAILED[/code] если иначе.[/br]
+			</description>
+		</method>
+		<method name="write_bits">
+			<return type="Error"/>
+			<description>
+				Производит последовательную запись данных в одноразрядные регистры начиная с базового адреса.[/br]
+				[param base_addr] - Начальный адрес регистров.[/br]
+				[param resp] - Данные для записи.[/br]
+				Возвращает [code]Error.OK[/code] если операция прошла успешно и [code]Error.FAILED[/code] если иначе.[/br]
+			</description>
+		</method>
+	</methods>
+	<signals>
+		<signal name="read">
+			<description>
+				Вызывается по завершению операции чтения регистров запущенной вызовом [code]request_read()[code].
+				[param return_code] - Результат выполнения операции: [code]Error.OK[/code] если операция прошла успешно и [code]Error.FAILED[/code] если иначе.[/br]
+				[param base_addr] - Начальный адрес регистров.[/br]
+				[param data] - Данные прочитанные из регистров.[/br]
+			</description>
+		</signal>
+		<signal name="read_input">
+			<description>
+				Вызывается по завершению операции чтения входных регистров.
+			</description>
+		</signal>
+		<signal name="read_bits">
+			<description>
+				Вызывается по завершению операции чтения одноразрядных регистров.
+			</description>
+		</signal>
+		<signal name="read_input_bits">
+			<description>
+				Вызывается по завершению операции чтения одноразрядных входных регистров.
+			</description>
+		</signal>
+		<signal name="write">
+			<description>
+				Вызывается по завершению операции записи в регистры.
+			</description>
+		</signal>
+		<signal name="write_bits">
+			<description>
+				Вызывается по завершению операции записи в одноразрядные регистры.
+			</description>
+		</signal>
+	</signals>
+</class>

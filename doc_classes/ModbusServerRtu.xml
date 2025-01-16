@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="ModbusServerRtu" inherits="Object" version="4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>
+	Сервер Modbus-RTU
+	</brief_description>
+	<members>
+		<member>
+		</member>
+	</members>
+	<methods>
+		<method name="">
+		<return type=""/>
+		<description>
+		</description>
+	</methods>
+</class>
