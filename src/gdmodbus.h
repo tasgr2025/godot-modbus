@@ -53,12 +53,6 @@ protected:
     static void _bind_methods();
     String _to_string() const {return String("<ModbusRtu: {_}>").format(this);}
     modbus_t *ctx = nullptr;
-    std::mutex mutex;
-    Thread thread;
-    std::mutex cv_mutex;
-    std::condition_variable cv;
-    bool resume_thread {false};
-    std::atomic<bool> run_thread {true};
 };
 
 
@@ -108,6 +102,12 @@ protected:
     Error thread_stop();
     static void _bind_methods();
     String _to_string() const {return String("<ModbusClientRtu: {_}>").format(this);}
+    std::mutex mutex;
+    Thread thread;
+    std::mutex cv_mutex;
+    std::condition_variable cv;
+    bool resume_thread {false};
+    std::atomic<bool> run_thread {true};
 private:    
     List<TaskItem> queue;
     /** Добавляет запрос на запись в порты
@@ -131,8 +131,8 @@ public:
    ~ModbusServerRtu();
     /** Процедура для обслуживания запросов. Возвращает:
      *     Error::ERR_BUSY - требуется продолжить приём пакетов.
-     *     Error::FAILED - при обработке входящих пакетов возникла ошибка.
-     *     Error::OK - входящие пакеты обработаны и ответ успешно отправлен */
+     *     Error::FAILED - при обработке запроса возникла ошибка.
+     *     Error::OK - входящий запрос обработан. */
     Error process();
     bool is_open() const {return ctx != nullptr && mb_mapping != nullptr;}
     /** Возвращает текущие значения битов */
@@ -171,6 +171,10 @@ protected:
     modbus_mapping_t *mb_mapping = nullptr;
     uint8_t *query = nullptr;
     String _to_string() const {return String("<ModbusServerRtu: {_}>").format(this);}
+    Thread thread;
+    Mutex mutex;
+    std::atomic<bool> run_thread {true};
+    std::atomic<uint32_t> udelay {1000U};
 };
 
 #endif // GDMODBUS_H

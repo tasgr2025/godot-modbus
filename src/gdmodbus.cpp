@@ -17,28 +17,31 @@ Error ModbusRtu::open(
 		const String &port,
 		int slave,
 		int baud,
-		const String &parity,   
+		const String &parity,
 		int bits,
 		int stop_bits) {
-	if (ctx) return Error::FAILED;
+	if (ctx) {
+        return Error::FAILED;
+    }
     ctx = modbus_new_rtu(
         port.ascii().get_data(),
         baud,
         parity.ascii().get_data()[0],
         bits,
         stop_bits);
-    if (!ctx) return Error::FAILED;
-    if (modbus_set_slave(ctx, slave) == -1)
-    {
+    if (!ctx) {
+        return Error::FAILED;
+    }
+    if (modbus_set_slave(ctx, slave) == -1) {
         close();
         return Error::FAILED;
     }
-    if (modbus_connect(ctx) == -1)
-    {   
+    if (modbus_connect(ctx) == -1) {
         close();
         return Error::FAILED;
     }
-    return Error::OK; }
+    return Error::OK;
+}
 
 
 void ModbusRtu::_bind_methods() {
@@ -65,10 +68,11 @@ void ModbusRtu::_bind_methods() {
 void ModbusRtu::close() {
     modbus_close(ctx);
     modbus_free(ctx);
-    ctx = NULL; }
+    ctx = NULL;
+}
 
 
-void ModbusClientRtu::thread_proc(void *arg) {   
+void ModbusClientRtu::thread_proc(void *arg) {
     ModbusClientRtu* self = static_cast<ModbusClientRtu*>(arg);
     self->call_deferred(sn_emit_signal, sn_thread_run);
     while (self->run_thread) {
@@ -81,7 +85,8 @@ void ModbusClientRtu::thread_proc(void *arg) {
                  self->cv.wait(lk, [self]{ return self->resume_thread; });
                  self->resume_thread = false; }
             self->cv.notify_one();
-            continue; }
+            continue;
+        }
         self->mutex.lock();
         TaskItem item (self->queue.get(0));
         self->queue.pop_front();
@@ -113,49 +118,62 @@ void ModbusClientRtu::thread_proc(void *arg) {
             break; }
         }
     }
-    self->call_deferred(sn_emit_signal, sn_thread_stop); }
+    self->call_deferred(sn_emit_signal, sn_thread_stop);
+}
 
 
 Error ModbusClientRtu::thread_run() {
-    if (thread.is_started()) return Error::FAILED;
+    if (thread.is_started()) {
+        return Error::FAILED;
+    }
     run_thread = true;
     resume_thread = false;
     thread.start(thread_proc, this);
-    return Error::OK; }
+    return Error::OK;
+}
 
 
 Error ModbusClientRtu::thread_stop() {
-    if (!thread.is_started()) return Error::FAILED;
+    if (!thread.is_started()) {
+        return Error::FAILED;
+    }
     run_thread = false;
     {   std::lock_guard lk(cv_mutex);
         resume_thread = true; }
     cv.notify_one();
     thread.wait_to_finish();
-    return Error::OK; }
+    return Error::OK;
+}
 
 
 void ModbusClientRtu::request_read(int base_addr, int count) {
-    push_request(TaskCode::read, base_addr, count); }
+    push_request(TaskCode::read, base_addr, count);
+}
 
 
 void ModbusClientRtu::request_read_bits(int base_addr, int count) {
-    push_request(TaskCode::read_bits, base_addr, count); }
+    push_request(TaskCode::read_bits, base_addr, count);
+}
 
 
 void ModbusClientRtu::request_read_input(int base_addr, int count) {
-    push_request(TaskCode::read_input, base_addr, count); }
+    push_request(TaskCode::read_input, base_addr, count);
+}
 
 
 void ModbusClientRtu::request_read_input_bits(int base_addr, int count){
-    push_request(TaskCode::read_input_bits, base_addr, count); }
+    push_request(TaskCode::read_input_bits, base_addr, count);
+}
 
 
 void ModbusClientRtu::request_write(int base_addr, const Array &resp) {
-    push_request(TaskCode::write, base_addr, resp); }
+    push_request(TaskCode::write, base_addr, resp);
+}
 
 
 void ModbusClientRtu::request_write_bits(int base_addr, const Array &resp) {
-    push_request(TaskCode::write_bits, base_addr, resp); }
+    push_request(TaskCode::write_bits, base_addr, resp);
+}
 
 
 void ModbusClientRtu::push_request(TaskCode task_code, int base_addr, int count) {
@@ -168,7 +186,8 @@ void ModbusClientRtu::push_request(TaskCode task_code, int base_addr, int count)
     mutex.unlock();
     {   std::lock_guard lk(cv_mutex);
         resume_thread = true; }
-    cv.notify_one(); }
+    cv.notify_one();
+}
 
 
 void ModbusClientRtu::push_request(TaskCode task_code, int base_addr, const Array &resp) {
@@ -176,8 +195,7 @@ void ModbusClientRtu::push_request(TaskCode task_code, int base_addr, const Arra
     item.code = task_code;
     item.addr = base_addr;
     item.count = resp.size();
-    for (size_t i = 0; i < item.count; i ++)
-    {
+    for (size_t i = 0; i < item.count; i ++) {
         Variant val = resp[i];
         item.data.append(val);
     }
@@ -186,140 +204,208 @@ void ModbusClientRtu::push_request(TaskCode task_code, int base_addr, const Arra
     mutex.unlock();
     {   std::lock_guard lk(cv_mutex);
         resume_thread = true; }
-    cv.notify_one(); }
+    cv.notify_one();
+}
 
 
 Error ModbusClientRtu::read(int base_addr, int count, Array resp) {
     resp.clear();
-    if ((base_addr < 0) || (count < 0)) return Error::ERR_INVALID_PARAMETER;
+    if ((base_addr < 0) || (count < 0)) {
+        return Error::ERR_INVALID_PARAMETER;
+    }
     Vector<uint16_t> resp_data;
     resp_data.resize(count);
     int rc = modbus_read_registers(ctx, base_addr, count, resp_data.ptrw());
-    if (rc == -1) return Error::FAILED;
+    if (rc == -1) {
+        return Error::FAILED;
+    }
     for(size_t i = 0; i < count; i++) {
-        resp.append(static_cast<int>(resp_data[i])); }
-    return Error::OK; }
+        resp.append(static_cast<int>(resp_data[i]));
+    }
+    return Error::OK;
+}
 
 
 Error ModbusClientRtu::read_input(int base_addr, int count, Array resp) {
     resp.clear();
-    if ((base_addr < 0) || (count < 0)) return Error::ERR_INVALID_PARAMETER;
+    if ((base_addr < 0) || (count < 0)) {
+        return Error::ERR_INVALID_PARAMETER;
+    }
     Vector<uint16_t> resp_data;
     resp_data.resize(count);
     int rc = modbus_read_input_registers(ctx, base_addr, count, resp_data.ptrw());
-    if (rc == -1) return Error::FAILED;
+    if (rc == -1) {
+        return Error::FAILED;
+    }
     for(size_t i = 0; i < count; i++) {
-        resp.append(static_cast<int>(resp_data[i])); }
-    return Error::OK; }
+        resp.append(static_cast<int>(resp_data[i]));
+    }
+    return Error::OK;
+}
 
 
 Error ModbusClientRtu::read_bits(int base_addr, int count, Array resp) {
     resp.clear();
-    if ((base_addr < 0) || (count < 0)) return Error::ERR_INVALID_PARAMETER;
+    if ((base_addr < 0) || (count < 0)) {
+        return Error::ERR_INVALID_PARAMETER;
+    }
     Vector<uint8_t> resp_data;
     resp_data.resize(count);
     int rc = modbus_read_bits(ctx, base_addr, count, resp_data.ptrw());
-    if (rc == -1) return Error::FAILED;
+    if (rc == -1) {
+        return Error::FAILED;
+    }
     for(size_t i = 0; i < count; i++) {
-        resp.append(static_cast<bool>(resp_data[i])); }
-    return Error::OK; }
+        resp.append(static_cast<bool>(resp_data[i]));
+    }
+    return Error::OK;
+}
 
 
 Error ModbusClientRtu::read_input_bits(int base_addr, int count, Array resp) {
     resp.clear();
-    if ((base_addr < 0) || (count < 0)) return Error::ERR_INVALID_PARAMETER;
+    if ((base_addr < 0) || (count < 0)) {
+        return Error::ERR_INVALID_PARAMETER;
+    }
     Vector<uint8_t> resp_data;
     resp_data.resize(count);
     int rc = modbus_read_input_bits(ctx, base_addr, count, resp_data.ptrw());
-    if (rc == -1) return Error::FAILED;
+    if (rc == -1) {
+        return Error::FAILED;
+    }
     for(size_t i = 0; i < count; i++) {
-        resp.append(static_cast<bool>(resp_data[i])); }
-    return OK; }
+        resp.append(static_cast<bool>(resp_data[i]));
+    }
+    return Error::OK;
+}
 
 
 Error ModbusClientRtu::write(int base_addr, const Array &resp) {
-    if (base_addr < 0) return Error::ERR_INVALID_PARAMETER;
+    if (base_addr < 0) {
+        return Error::ERR_INVALID_PARAMETER;
+    }
     Vector<uint16_t> resp_data;
     resp_data.resize(resp.size());
-    for(size_t i = 0; i < resp.size(); i++)
-    {
-        resp_data.ptrw()[i] = (resp[i].get_type() == Variant::Type::INT) ? static_cast<uint16_t>(resp[i]) : 0;
+    for(size_t i = 0; i < resp.size(); i++) {
+        if (resp[i].get_type() != Variant::Type::INT) {
+            return Error::ERR_INVALID_PARAMETER;
+        }
+        resp_data.ptrw()[i] = static_cast<uint16_t>(resp[i]);
     }
     int rc = modbus_write_registers(ctx, base_addr, resp.size(), resp_data.ptrw());
-    return rc == -1 ? Error::FAILED : Error::OK; }
+    return (rc == -1) ? Error::FAILED : Error::OK;
+}
 
 
 Error ModbusClientRtu::write_bits(int base_addr, const Array &resp) {
-    if (base_addr < 0) return Error::ERR_INVALID_PARAMETER;
+    if (base_addr < 0) {
+        return Error::ERR_INVALID_PARAMETER;
+    }
     Vector<uint8_t> resp_data;
     resp_data.resize(resp.size());
-    for(size_t i = 0; i < resp.size(); i++)
-    {
-        resp_data.ptrw()[i] = (resp[i].get_type() == Variant::Type::BOOL) ? static_cast<uint8_t>(resp[i]) : 0;
+    for(size_t i = 0; i < resp.size(); i++) {
+        if (resp[i].get_type() != Variant::Type::BOOL) {
+            return Error::ERR_INVALID_PARAMETER;
+        }
+        resp_data.ptrw()[i] = static_cast<uint8_t>(resp[i]);
     }
     int rc = modbus_write_bits(ctx, base_addr, resp.size(), resp_data.ptrw());
-    return rc == -1 ? Error::FAILED : Error::OK; }
+    return (rc == -1) ? Error::FAILED : Error::OK;
+}
 
 
 Error ModbusRtu::flush() {
-    if (modbus_flush(ctx) == -1) return Error::FAILED;
-	return Error::OK; }
+    if (modbus_flush(ctx) == -1) {
+        return Error::FAILED;
+    }
+	return Error::OK;
+}
 
 
 Error ModbusRtu::set_debug(bool is_debug) {
-    if (modbus_set_debug(ctx, is_debug ? 1 : 0) == -1) return Error::FAILED;
-	return Error::OK; }
+    if (modbus_set_debug(ctx, is_debug ? 1 : 0) == -1) {
+        return Error::FAILED;
+    }
+	return Error::OK;
+}
 
 
 bool ModbusRtu::get_debug() {
    int rc = modbus_get_debug(ctx);
-   if (rc == -1) return false;
-   return rc > 0; }
+   if (rc == -1) {
+       return false;
+   }
+   return rc > 0;
+}
 
 
 float ModbusRtu::get_indication_timeout() {
     uint32_t tv_sec  = 0U;
     uint32_t tv_usec = 0U;
-    if (modbus_get_indication_timeout(ctx, &tv_sec, &tv_usec) == -1) return 0.0f;
-    return static_cast<float>(tv_sec * 1000000U + tv_usec); }
+    if (modbus_get_indication_timeout(ctx, &tv_sec, &tv_usec) == -1) {
+        return 0.0f;
+    }
+    return static_cast<float>(tv_sec * 1000000U + tv_usec);
+}
 
 
 Error ModbusRtu::set_indication_timeout(float timeout) {
-    if (timeout < 0.0f) timeout = 0.0f;
+    if (timeout < 0.0f) {
+        return Error::ERR_INVALID_PARAMETER;
+    }
     uint32_t tv_sec  = static_cast<uint32_t>(roundf(timeout / 1000000.0f));
     uint32_t tv_usec = static_cast<uint32_t>(timeout) % 1000000U;
-    if (modbus_set_indication_timeout(ctx, tv_sec, tv_usec) == -1) return Error::FAILED;
-    return Error::OK; }
+    if (modbus_set_indication_timeout(ctx, tv_sec, tv_usec) == -1) {
+        return Error::FAILED;
+    }
+    return Error::OK;
+}
 
 
 float ModbusRtu::get_response_timeout() {
     uint32_t tv_sec  = 0U;
     uint32_t tv_usec = 0U;
-    if (modbus_get_response_timeout(ctx, &tv_sec, &tv_usec) == -1) return 0.0f;
-    return static_cast<float>(tv_sec * 1000000U + tv_usec); }
+    if (modbus_get_response_timeout(ctx, &tv_sec, &tv_usec) == -1) {
+        return 0.0f;
+    }
+    return static_cast<float>(tv_sec * 1000000U + tv_usec);
+}
 
 
 Error ModbusRtu::set_response_timeout(float timeout) {
-    if (timeout < 0.0f) timeout = 0.0f;
+    if (timeout < 0.0f) {
+        return Error::ERR_INVALID_PARAMETER;
+    }
     uint32_t tv_sec  = static_cast<uint32_t>(roundf(timeout / 1000000.0f));
     uint32_t tv_usec = static_cast<uint32_t>(timeout) % 1000000U;
-    if (modbus_set_response_timeout(ctx, tv_sec, tv_usec) == -1) return Error::FAILED;
-    return Error::OK; }
+    if (modbus_set_response_timeout(ctx, tv_sec, tv_usec) == -1) {
+        return Error::FAILED;
+    }
+    return Error::OK;
+}
 
 
 Error ModbusRtu::set_byte_timeout(float timeout) {
-    if (timeout < 0.0f) timeout = 0.0f;
+    if (timeout < 0.0f) {
+        return Error::ERR_INVALID_PARAMETER;
+    }
     uint32_t tv_sec  = static_cast<uint32_t>(roundf(timeout / 1000000.0f));
     uint32_t tv_usec = static_cast<uint32_t>(timeout) % 1000000U;
-    if (modbus_set_byte_timeout(ctx, tv_sec, tv_usec) == -1) return Error::FAILED;
-    return Error::OK; }
+    if (modbus_set_byte_timeout(ctx, tv_sec, tv_usec) == -1) {
+        return Error::FAILED;
+    }
+    return Error::OK;
+}
 
 
 float ModbusRtu::get_byte_timeout() {
     uint32_t tv_sec  = 0U;
     uint32_t tv_usec = 0U;
-    if (modbus_get_byte_timeout(ctx, &tv_sec, &tv_usec) == -1) return 0.0f;
-    return static_cast<float>(tv_sec * 1000000U + tv_usec); }
+    if (modbus_get_byte_timeout(ctx, &tv_sec, &tv_usec) == -1) {
+        return 0.0f;
+    }
+    return static_cast<float>(tv_sec * 1000000U + tv_usec);
+}
 
 
 Error ModbusRtu::report_slave_id(Array resp) {
@@ -327,42 +413,61 @@ Error ModbusRtu::report_slave_id(Array resp) {
     Vector<uint8_t> resp_data;
     resp_data.resize(MODBUS_MAX_ADU_LENGTH);
     int rc = modbus_report_slave_id(ctx, resp_data.size(), resp_data.ptrw());
-    if (rc == -1) return Error::FAILED;
+    if (rc == -1) {
+        return Error::FAILED;
+    }
     resp.resize(MIN(rc, resp_data.size()));
-    for(size_t i = 0; i < resp.size(); i++) resp[i] = static_cast<int>(resp_data[i]);
-    return Error::OK; }
+    for(size_t i = 0; i < resp.size(); i++) {
+        resp[i] = static_cast<int>(resp_data[i]);
+    }
+    return Error::OK;
+}
 
 
 Error ModbusRtu::set_error_recovery(bool val) {
    if (modbus_set_error_recovery(ctx,
-        val ? 
+        val ?
         (modbus_error_recovery_mode) (MODBUS_ERROR_RECOVERY_LINK | MODBUS_ERROR_RECOVERY_PROTOCOL):
-        (modbus_error_recovery_mode) 0) == -1) return Error::FAILED;
-    return Error::OK; }
+        (modbus_error_recovery_mode) 0) == -1) {
+        return Error::FAILED;
+    }
+    return Error::OK;
+}
 
 
 Error ModbusRtu::set_slave(int slave) {
-    if (modbus_set_slave(ctx, slave) == -1) return Error::FAILED;
-	return Error::OK; }
+    if (modbus_set_slave(ctx, slave) == -1) {
+        return Error::FAILED;
+    }
+	return Error::OK;
+}
 
 
 int ModbusRtu::get_slave() {
-    return modbus_get_slave(ctx); }
+    return modbus_get_slave(ctx);
+}
 
 
 Error ModbusRtu::set_socket(int s) {
-    if (modbus_set_socket(ctx, s) == -1) return Error::FAILED;
-    return Error::OK; }
+    if (modbus_set_socket(ctx, s) == -1) {
+        return Error::FAILED;
+    }
+    return Error::OK;
+}
 
 
 int ModbusRtu::get_socket() {
-    return modbus_get_socket(ctx); }
+    return modbus_get_socket(ctx);
+}
 
 
 bool ModbusRtu::get_error_recovery() {
    int rc = modbus_get_error_recovery(ctx);
-   if (rc == -1) return false;
-   return rc == MODBUS_ERROR_RECOVERY_LINK | MODBUS_ERROR_RECOVERY_PROTOCOL; }
+   if (rc == -1) {
+        return false;
+   }
+   return rc == MODBUS_ERROR_RECOVERY_LINK | MODBUS_ERROR_RECOVERY_PROTOCOL;
+}
 
 
 void ModbusClientRtu::_bind_methods() {
@@ -373,18 +478,18 @@ void ModbusClientRtu::_bind_methods() {
     ClassDB::bind_method(D_METHOD("read_bits",       "base_addr", "count", "resp"), &ModbusClientRtu::read_bits);
     ClassDB::bind_method(D_METHOD("read_input",      "base_addr", "count", "resp"), &ModbusClientRtu::read_input);
     ClassDB::bind_method(D_METHOD("read_input_bits", "base_addr", "count", "resp"), &ModbusClientRtu::read_input_bits);
-    
+
     ClassDB::bind_method(D_METHOD("write",      "base_addr", "resp"), &ModbusClientRtu::write);
     ClassDB::bind_method(D_METHOD("write_bits", "base_addr", "resp"), &ModbusClientRtu::write_bits);
-  
+
     ClassDB::bind_method(D_METHOD("request_read",            "base_addr", "count"), &ModbusClientRtu::request_read);
     ClassDB::bind_method(D_METHOD("request_read_bits",       "base_addr", "count"), &ModbusClientRtu::request_read_bits);
     ClassDB::bind_method(D_METHOD("request_read_input",      "base_addr", "count"), &ModbusClientRtu::request_read_input);
     ClassDB::bind_method(D_METHOD("request_read_input_bits", "base_addr", "count"), &ModbusClientRtu::request_read_input_bits);
-    
+
     ClassDB::bind_method(D_METHOD("request_write",      "base_addr", "resp"), &ModbusClientRtu::request_write);
     ClassDB::bind_method(D_METHOD("request_write_bits", "base_addr", "resp"), &ModbusClientRtu::request_write_bits);
-    
+
     ADD_SIGNAL(MethodInfo(sn_read,            PropertyInfo(Variant::INT, "return_code"), PropertyInfo(Variant::INT, "base_addr"), PropertyInfo(Variant::ARRAY, "data")));
     ADD_SIGNAL(MethodInfo(sn_read_bits,       PropertyInfo(Variant::INT, "return_code"), PropertyInfo(Variant::INT, "base_addr"), PropertyInfo(Variant::ARRAY, "data")));
     ADD_SIGNAL(MethodInfo(sn_read_input,      PropertyInfo(Variant::INT, "return_code"), PropertyInfo(Variant::INT, "base_addr"), PropertyInfo(Variant::ARRAY, "data")));
@@ -396,17 +501,24 @@ void ModbusClientRtu::_bind_methods() {
 
 ModbusServerRtu::ModbusServerRtu() {
     mb_mapping = modbus_mapping_new_start_address(0, 512, 0, 512, 0, 512, 0, 512);
-    query = static_cast<uint8_t*>(malloc(MODBUS_RTU_MAX_ADU_LENGTH)); }
+    query = static_cast<uint8_t*>(malloc(MODBUS_RTU_MAX_ADU_LENGTH));
+}
 
 
 ModbusServerRtu::~ModbusServerRtu() {
+    if (thread.is_started()) {
+        run_thread = false;
+        thread.wait_to_finish();
+    }
     modbus_mapping_free(mb_mapping);
-    free(query); }
+    free(query);
+}
 
 
 Error ModbusServerRtu::set_mapping(const Variant &dic) {
-    if (dic.get_type() != Variant::DICTIONARY) return Error::ERR_INVALID_PARAMETER;
-    modbus_mapping_t *mb_mapping_tmp = mb_mapping;
+    if (dic.get_type() != Variant::DICTIONARY) {
+        return Error::ERR_INVALID_PARAMETER;
+    }
     Dictionary d = dic;
     mb_mapping = modbus_mapping_new_start_address(
         static_cast<int>(d.get("start_bits",            mb_mapping_tmp->start_bits)),
@@ -436,11 +548,54 @@ Dictionary ModbusServerRtu::get_mapping() {
 
 Error ModbusServerRtu::process() {
     int rc = modbus_receive(ctx, query);
-    if      (rc == 0)                        return Error::ERR_BUSY;
-    else if (rc == -1 && errno != EMBBADCRC) return Error::FAILED;
+    if (rc == 0) {
+        return Error::ERR_BUSY;
+    }
+    else if (rc == -1 && errno != EMBBADCRC) {
+        call_deferred(sn_receive_error);
+        return Error::FAILED;
+    }
+    call_deferred(sn_receive);
     int rsp_length = compute_response_length_from_request(ctx, query);
-    if (modbus_reply(ctx, query, rsp_length, mb_mapping) == -1) return Error::FAILED;
-    return Error::OK; }
+    if (modbus_reply(ctx, query, rsp_length, mb_mapping) == -1) {
+        return Error::FAILED;
+    }
+    call_deferred(sn_reply);
+    return Error::OK;
+}
+
+
+Error ModbusServerRtu::thread_run() {
+    if (thread.is_started()) {
+        return Error::FAILED;
+    }
+    run_thread = true;
+    thread.start(thread_proc, this);
+	return Error::OK;
+}
+
+
+Error ModbusServerRtu::thread_stop() {
+    if (!thread.is_started()) {
+        return Error::FAILED;
+    }
+    run_thread = false;
+    thread.wait_to_finish();
+	return Error::OK;
+}
+
+
+void ModbusServerRtu::thread_proc(void *arg) {
+    ModbusServerRtu* self = static_cast<ModbusServerRtu*>(arg);
+    while(self->run_thread) {
+        self->mutex.lock();
+        Error rc = self->process();
+        self->mutex.unlock();
+        if ((rc == Error::FAILED) || (rc == Error::OK)) {
+            OS::get_singleton()->delay_usec(self->udelay);
+        }
+    }
+}
 
 
 Dictionary ModbusServerRtu::get_bits() const {
@@ -480,7 +635,9 @@ Dictionary ModbusServerRtu::get_input_registers() const {
 
 
 Error ModbusServerRtu::set_bits(const Variant &dic) {
-    if (dic.get_type() != Variant::DICTIONARY) return Error::ERR_INVALID_PARAMETER;
+    if (dic.get_type() != Variant::DICTIONARY) {
+        return Error::ERR_INVALID_PARAMETER;
+    }
     Dictionary d = dic;
     List<Variant> keys;
     d.get_key_list(&keys);
@@ -488,7 +645,10 @@ Error ModbusServerRtu::set_bits(const Variant &dic) {
     for (int i = 0; i < keys.size(); i ++)
     {
        int key, val;
-       if (!get_key_val(d, keys, i, mb_mapping->nb_bits, key, val)) continue;
+       if (!get_key_val(d, keys, i, mb_mapping->nb_bits, key, val)) {
+           rc = Error::ERR_INVALID_PARAMETER;
+           break;
+       }
        mb_mapping->tab_bits[key] = val;
        rc = Error::OK;
     }
@@ -496,7 +656,9 @@ Error ModbusServerRtu::set_bits(const Variant &dic) {
 
 
 Error ModbusServerRtu::set_input_bits(const Variant &dic) {
-    if (dic.get_type() != Variant::DICTIONARY) return Error::ERR_INVALID_PARAMETER;
+    if (dic.get_type() != Variant::DICTIONARY) {
+        return Error::ERR_INVALID_PARAMETER;
+    }
     Dictionary d = dic;
     List<Variant> keys;
     d.get_key_list(&keys);
@@ -504,7 +666,10 @@ Error ModbusServerRtu::set_input_bits(const Variant &dic) {
     for (int i = 0; i < keys.size(); i ++)
     {
        int key, val;
-       if (!get_key_val(d, keys, i, mb_mapping->nb_input_bits, key, val)) continue;
+       if (!get_key_val(d, keys, i, mb_mapping->nb_input_bits, key, val)) {
+           rc = Error::ERR_INVALID_PARAMETER;
+           break;
+       }
        mb_mapping->tab_input_bits[key] = val;
        rc = Error::OK;
     }
@@ -512,7 +677,9 @@ Error ModbusServerRtu::set_input_bits(const Variant &dic) {
 
 
 Error ModbusServerRtu::set_registers(const Variant &dic) {
-    if (dic.get_type() != Variant::DICTIONARY) return Error::ERR_INVALID_PARAMETER;
+    if (dic.get_type() != Variant::DICTIONARY) {
+        return Error::ERR_INVALID_PARAMETER;
+    }
     Dictionary d = dic;
     List<Variant> keys;
     d.get_key_list(&keys);
@@ -520,7 +687,10 @@ Error ModbusServerRtu::set_registers(const Variant &dic) {
     for (int i = 0; i < keys.size(); i ++)
     {
        int key, val;
-       if (!get_key_val(d, keys, i, mb_mapping->nb_registers, key, val)) continue;
+       if (!get_key_val(d, keys, i, mb_mapping->nb_registers, key, val)) {
+            rc = Error::ERR_INVALID_PARAMETER;
+            break;
+       }
        mb_mapping->tab_registers[key] = val;
        rc = Error::OK;
     }
@@ -528,7 +698,9 @@ Error ModbusServerRtu::set_registers(const Variant &dic) {
 
 
 Error ModbusServerRtu::set_input_registers(const Variant &dic) {
-    if (dic.get_type() != Variant::DICTIONARY) return Error::ERR_INVALID_PARAMETER;
+    if (dic.get_type() != Variant::DICTIONARY) {
+        return Error::ERR_INVALID_PARAMETER;
+    }
     Dictionary d = dic;
     List<Variant> keys;
     d.get_key_list(&keys);
@@ -536,22 +708,33 @@ Error ModbusServerRtu::set_input_registers(const Variant &dic) {
     for (int i = 0; i < keys.size(); i ++)
     {
        int key, val;
-       if (!get_key_val(d, keys, i, mb_mapping->nb_input_registers, key, val)) continue;
+       if (!get_key_val(d, keys, i, mb_mapping->nb_input_registers, key, val)) {
+            rc = Error::ERR_INVALID_PARAMETER;
+            break;
+       }
        mb_mapping->tab_input_registers[key] = val;
        rc = Error::OK;
     }
 	return rc; }
 
 
-bool get_key_val(const Dictionary &d, const List<Variant> &keys, const int &i, const int &nb, int &key, int &val) {
+bool get_key_val(const Dictionary &d, const List<Variant> &keys,
+    const int &i, const int &nb, int &key, int &val) {
     Variant vkey = keys.get(i);
-    if (vkey.get_type() != Variant::INT) return false;
+    if (vkey.get_type() != Variant::INT) {
+        return false;
+    }
     key = vkey;
     Variant vval = d.get(vkey, 0);
-    if (vval.get_type() != Variant::INT) return false;
+    if (vval.get_type() != Variant::INT) {
+        return false;
+    }
     val = vval;
-    if ((key < 0) || (key >= nb)) return false;
-    return true; }
+    if ((key < 0) || (key >= nb)) {
+        return false;
+    }
+    return true;
+}
 
 
 void ModbusServerRtu::_bind_methods() {
