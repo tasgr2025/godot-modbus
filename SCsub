@@ -6,7 +6,7 @@ Import("env_modules")
 env_modbus = env_modules.Clone()
 
 print("Сборка модуля \"modbus\" для \"%s\"." % env["platform"])
-Copy("libmodbus", "config.h.%s/config.h" % env["platform"])
+Execute(Copy("libmodbus/config.h", "config.h.%s/config.h" % env["platform"]))
 env_modbus.Prepend(CPPPATH=["libmodbus", "libmodbus/src"])
 env_modbus = env_modbus.Clone()
 env_modbus.disable_warnings()
