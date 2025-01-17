@@ -15,6 +15,7 @@
 #include "core/variant/variant.h"
 #include "core/os/thread.h"
 #include "core/os/mutex.h"
+#include "core/os/os.h"
 
 /** ... */
 bool get_key_val(const Dictionary &d, const List<Variant> &keys, const int &i, const int &nb, int &key, int &val);
@@ -134,6 +135,8 @@ public:
      *     Error::FAILED - при обработке запроса возникла ошибка.
      *     Error::OK - входящий запрос обработан. */
     Error process();
+    Error thread_run();
+    Error thread_stop();
     bool is_open() const {return ctx != nullptr && mb_mapping != nullptr;}
     /** Возвращает текущие значения битов */
     Dictionary get_bits() const;
@@ -166,8 +169,13 @@ public:
     Error set_mapping(const Variant &dic);
     /** Возвращает параметры хранилища данных. Смотри [set_mapping] */
     Dictionary get_mapping();
+    /** Задаёт время задержки в мкс добавляемой после завершения обработки запроса от клиента.
+     * Влияет только на цикл внутри потока запускаемого возовом [method thread_run].*/
+    void set_delay(uint32_t val) { udelay = val; };
+    uint32_t get_delay() { return static_cast<uint32_t>(udelay); };
 protected:
     static void _bind_methods();
+    static void thread_proc(void* arg);
     modbus_mapping_t *mb_mapping = nullptr;
     uint8_t *query = nullptr;
     String _to_string() const {return String("<ModbusServerRtu: {_}>").format(this);}

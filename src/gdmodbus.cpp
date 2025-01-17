@@ -11,6 +11,9 @@ static const char* sn_write_bits      = "write_bits";
 static const char* sn_queue_empty     = "queue_empty";
 static const char* sn_thread_run      = "thread_run";
 static const char* sn_thread_stop     = "thread_stop";
+static const char* sn_receive         = "receive";
+static const char* sn_reply           = "reply";
+static const char* sn_receive_error   = "receive_error";
 
 
 Error ModbusRtu::open(
@@ -59,10 +62,8 @@ void ModbusRtu::_bind_methods() {
     ClassDB::bind_method(D_METHOD("set_response_timeout"),   &ModbusRtu::set_response_timeout);
     ClassDB::bind_method(D_METHOD("get_byte_timeout"),       &ModbusRtu::get_byte_timeout);
     ClassDB::bind_method(D_METHOD("set_byte_timeout"),       &ModbusRtu::set_byte_timeout);
-    ClassDB::bind_method(D_METHOD("get_error_recovery"),     &ModbusRtu::get_error_recovery); 
-
-    ADD_SIGNAL(MethodInfo(sn_thread_run));
-    ADD_SIGNAL(MethodInfo(sn_thread_stop)); }
+    ClassDB::bind_method(D_METHOD("get_error_recovery"),     &ModbusRtu::get_error_recovery);
+}
 
 
 void ModbusRtu::close() {
@@ -90,7 +91,6 @@ void ModbusClientRtu::thread_proc(void *arg) {
         self->mutex.lock();
         TaskItem item (self->queue.get(0));
         self->queue.pop_front();
-        self->mutex.unlock();
         switch(item.code) {
         case TaskCode::write: {
             Error rc = self->write(item.addr, item.data);
@@ -117,6 +117,7 @@ void ModbusClientRtu::thread_proc(void *arg) {
             self->call_deferred(sn_emit_signal, sn_read_input_bits, rc, item.addr, item.data);
             break; }
         }
+        self->mutex.unlock();
     }
     self->call_deferred(sn_emit_signal, sn_thread_stop);
 }
@@ -496,7 +497,10 @@ void ModbusClientRtu::_bind_methods() {
     ADD_SIGNAL(MethodInfo(sn_read_input_bits, PropertyInfo(Variant::INT, "return_code"), PropertyInfo(Variant::INT, "base_addr"), PropertyInfo(Variant::ARRAY, "data")));
     ADD_SIGNAL(MethodInfo(sn_write,           PropertyInfo(Variant::INT, "return_code"), PropertyInfo(Variant::INT, "base_addr"), PropertyInfo(Variant::ARRAY, "data")));
     ADD_SIGNAL(MethodInfo(sn_write_bits,      PropertyInfo(Variant::INT, "return_code"), PropertyInfo(Variant::INT, "base_addr"), PropertyInfo(Variant::ARRAY, "data")));
-    ADD_SIGNAL(MethodInfo(sn_queue_empty)); }
+    ADD_SIGNAL(MethodInfo(sn_queue_empty));
+    ADD_SIGNAL(MethodInfo(sn_thread_run));
+    ADD_SIGNAL(MethodInfo(sn_thread_stop));
+}
 
 
 ModbusServerRtu::ModbusServerRtu() {
@@ -520,6 +524,8 @@ Error ModbusServerRtu::set_mapping(const Variant &dic) {
         return Error::ERR_INVALID_PARAMETER;
     }
     Dictionary d = dic;
+    mutex.lock();
+    modbus_mapping_t *mb_mapping_tmp = mb_mapping;
     mb_mapping = modbus_mapping_new_start_address(
         static_cast<int>(d.get("start_bits",            mb_mapping_tmp->start_bits)),
         static_cast<int>(d.get("nb_bits",               mb_mapping_tmp->nb_bits)),
@@ -530,11 +536,14 @@ Error ModbusServerRtu::set_mapping(const Variant &dic) {
         static_cast<int>(d.get("start_input_registers", mb_mapping_tmp->start_input_registers)),
         static_cast<int>(d.get("nb_input_registers",    mb_mapping_tmp->nb_input_registers)));
    modbus_mapping_free(mb_mapping_tmp);
-   return Error::OK; }
+   mutex.unlock();
+   return Error::OK;
+}
 
 
 Dictionary ModbusServerRtu::get_mapping() {
     Dictionary dic;
+    mutex.lock();
     dic["start_bits"]            = mb_mapping->start_bits;
     dic["nb_bits"]               = mb_mapping->nb_bits;
     dic["start_input_bits"]      = mb_mapping->start_input_bits;
@@ -543,7 +552,9 @@ Dictionary ModbusServerRtu::get_mapping() {
     dic["nb_registers"]          = mb_mapping->nb_registers;
     dic["start_input_registers"] = mb_mapping->start_input_registers;
     dic["nb_input_registers"]    = mb_mapping->nb_input_registers;
-    return dic; }
+    mutex.unlock();
+    return dic;
+}
 
 
 Error ModbusServerRtu::process() {
@@ -600,38 +611,46 @@ void ModbusServerRtu::thread_proc(void *arg) {
 
 Dictionary ModbusServerRtu::get_bits() const {
     Dictionary dic;
-    for (int i = mb_mapping->start_bits; i < mb_mapping->nb_bits; i ++)
-    {
+    mutex.lock();
+    for (int i = mb_mapping->start_bits; i < mb_mapping->nb_bits; i ++) {
         dic[i] = static_cast<bool>(mb_mapping->tab_bits[i]);
     }
-    return dic; }
+    mutex.unlock();
+    return dic;
+}
 
 
 Dictionary ModbusServerRtu::get_input_bits() const {
     Dictionary dic;
-    for (int i = mb_mapping->start_input_bits; i < mb_mapping->nb_input_bits; i ++)
-    {
+    mutex.lock();
+    for (int i = mb_mapping->start_input_bits; i < mb_mapping->nb_input_bits; i ++) {
         dic[i] = static_cast<bool>(mb_mapping->tab_input_bits[i]);
     }
-    return dic; }
+    mutex.unlock();
+    return dic;
+}
 
 
 Dictionary ModbusServerRtu::get_registers() const {
     Dictionary dic;
-    for (int i = mb_mapping->start_registers; i < mb_mapping->nb_registers; i ++)
-    {
+    mutex.lock();
+    for (int i = mb_mapping->start_registers; i < mb_mapping->nb_registers; i ++) {
         dic[i] = static_cast<int>(mb_mapping->tab_registers[i]);
     }
-    return dic; }
+    mutex.unlock();
+    return dic;
+}
 
 
 Dictionary ModbusServerRtu::get_input_registers() const {
     Dictionary dic;
-    for (int i = mb_mapping->start_input_registers; i < mb_mapping->nb_input_registers; i ++)
-    {
+    mutex.lock();
+    for (int i = mb_mapping->start_input_registers; i < mb_mapping->nb_input_registers; i ++) {
         dic[i] = static_cast<int>(mb_mapping->tab_input_registers[i]);
     }
-    return dic; }
+    mutex.unlock();
+    return dic;
+}
 
 
 Error ModbusServerRtu::set_bits(const Variant &dic) {
@@ -641,18 +660,19 @@ Error ModbusServerRtu::set_bits(const Variant &dic) {
     Dictionary d = dic;
     List<Variant> keys;
     d.get_key_list(&keys);
-    Error rc = Error::FAILED;
-    for (int i = 0; i < keys.size(); i ++)
-    {
+    Error rc = Error::OK;
+    mutex.lock();
+    for (int i = 0; i < keys.size(); i ++) {
        int key, val;
        if (!get_key_val(d, keys, i, mb_mapping->nb_bits, key, val)) {
            rc = Error::ERR_INVALID_PARAMETER;
            break;
        }
        mb_mapping->tab_bits[key] = val;
-       rc = Error::OK;
     }
-	return rc; }
+    mutex.unlock();
+	return rc;
+}
 
 
 Error ModbusServerRtu::set_input_bits(const Variant &dic) {
@@ -662,18 +682,19 @@ Error ModbusServerRtu::set_input_bits(const Variant &dic) {
     Dictionary d = dic;
     List<Variant> keys;
     d.get_key_list(&keys);
-    Error rc = Error::FAILED;
-    for (int i = 0; i < keys.size(); i ++)
-    {
+    Error rc = Error::OK;
+    mutex.lock();
+    for (int i = 0; i < keys.size(); i ++) {
        int key, val;
        if (!get_key_val(d, keys, i, mb_mapping->nb_input_bits, key, val)) {
            rc = Error::ERR_INVALID_PARAMETER;
            break;
        }
        mb_mapping->tab_input_bits[key] = val;
-       rc = Error::OK;
     }
-	return rc;}
+    mutex.unlock();
+	return rc;
+}
 
 
 Error ModbusServerRtu::set_registers(const Variant &dic) {
@@ -683,18 +704,19 @@ Error ModbusServerRtu::set_registers(const Variant &dic) {
     Dictionary d = dic;
     List<Variant> keys;
     d.get_key_list(&keys);
-    Error rc = Error::FAILED;
-    for (int i = 0; i < keys.size(); i ++)
-    {
+    Error rc = Error::OK;
+    mutex.lock();
+    for (int i = 0; i < keys.size(); i ++) {
        int key, val;
        if (!get_key_val(d, keys, i, mb_mapping->nb_registers, key, val)) {
             rc = Error::ERR_INVALID_PARAMETER;
             break;
        }
        mb_mapping->tab_registers[key] = val;
-       rc = Error::OK;
     }
-	return rc; }
+    mutex.unlock();
+	return rc;
+}
 
 
 Error ModbusServerRtu::set_input_registers(const Variant &dic) {
@@ -704,18 +726,19 @@ Error ModbusServerRtu::set_input_registers(const Variant &dic) {
     Dictionary d = dic;
     List<Variant> keys;
     d.get_key_list(&keys);
-    Error rc = Error::FAILED;
-    for (int i = 0; i < keys.size(); i ++)
-    {
+    Error rc = Error::OK;
+    mutex.lock();
+    for (int i = 0; i < keys.size(); i ++) {
        int key, val;
        if (!get_key_val(d, keys, i, mb_mapping->nb_input_registers, key, val)) {
             rc = Error::ERR_INVALID_PARAMETER;
             break;
        }
        mb_mapping->tab_input_registers[key] = val;
-       rc = Error::OK;
     }
-	return rc; }
+    mutex.unlock();
+	return rc;
+}
 
 
 bool get_key_val(const Dictionary &d, const List<Variant> &keys,
@@ -744,5 +767,10 @@ void ModbusServerRtu::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_bits"),            &ModbusServerRtu::get_bits);
     ClassDB::bind_method(D_METHOD("get_input_bits"),      &ModbusServerRtu::get_input_bits);
     ClassDB::bind_method(D_METHOD("get_registers"),       &ModbusServerRtu::get_registers);
-    ClassDB::bind_method(D_METHOD("get_input_registers"), &ModbusServerRtu::get_input_registers); }
-
+    ClassDB::bind_method(D_METHOD("get_input_registers"), &ModbusServerRtu::get_input_registers);
+    ClassDB::bind_method(D_METHOD("set_delay"),           &ModbusServerRtu::set_delay);
+    ClassDB::bind_method(D_METHOD("get_delay"),           &ModbusServerRtu::get_delay);
+    ADD_SIGNAL(MethodInfo(sn_receive_error));
+    ADD_SIGNAL(MethodInfo(sn_receive));
+    ADD_SIGNAL(MethodInfo(sn_reply));
+}
