@@ -761,15 +761,21 @@ bool get_key_val(const Dictionary &d, const List<Variant> &keys,
 
 
 void ModbusServerRtu::_bind_methods() {
-    ClassDB::bind_method(D_METHOD("process"),             &ModbusServerRtu::process);
-    ClassDB::bind_method(D_METHOD("set_mapping"),         &ModbusServerRtu::set_mapping);
-    ClassDB::bind_method(D_METHOD("get_mapping"),         &ModbusServerRtu::get_mapping);
-    ClassDB::bind_method(D_METHOD("get_bits"),            &ModbusServerRtu::get_bits);
-    ClassDB::bind_method(D_METHOD("get_input_bits"),      &ModbusServerRtu::get_input_bits);
-    ClassDB::bind_method(D_METHOD("get_registers"),       &ModbusServerRtu::get_registers);
-    ClassDB::bind_method(D_METHOD("get_input_registers"), &ModbusServerRtu::get_input_registers);
-    ClassDB::bind_method(D_METHOD("set_delay"),           &ModbusServerRtu::set_delay);
-    ClassDB::bind_method(D_METHOD("get_delay"),           &ModbusServerRtu::get_delay);
+    ClassDB::bind_method(D_METHOD("process"),                    &ModbusServerRtu::process);
+    ClassDB::bind_method(D_METHOD("thread_run"),                 &ModbusServerRtu::thread_run);
+    ClassDB::bind_method(D_METHOD("thread_stop"),                &ModbusServerRtu::thread_stop);
+    ClassDB::bind_method(D_METHOD("set_mapping", "dic"),         &ModbusServerRtu::set_mapping);
+    ClassDB::bind_method(D_METHOD("set_delay", "delay_usec"),    &ModbusServerRtu::set_delay);
+    ClassDB::bind_method(D_METHOD("set_bits", "dic"),            &ModbusServerRtu::set_bits);
+    ClassDB::bind_method(D_METHOD("set_input_bits", "dic"),      &ModbusServerRtu::set_input_bits);
+    ClassDB::bind_method(D_METHOD("set_registers", "dic"),       &ModbusServerRtu::set_registers);
+    ClassDB::bind_method(D_METHOD("set_input_registers", "dic"), &ModbusServerRtu::set_input_registers);
+    ClassDB::bind_method(D_METHOD("get_mapping"),                &ModbusServerRtu::get_mapping);
+    ClassDB::bind_method(D_METHOD("get_bits"),                   &ModbusServerRtu::get_bits);
+    ClassDB::bind_method(D_METHOD("get_input_bits"),             &ModbusServerRtu::get_input_bits);
+    ClassDB::bind_method(D_METHOD("get_registers"),              &ModbusServerRtu::get_registers);
+    ClassDB::bind_method(D_METHOD("get_input_registers"),        &ModbusServerRtu::get_input_registers);
+    ClassDB::bind_method(D_METHOD("get_delay"),                  &ModbusServerRtu::get_delay);
     ADD_SIGNAL(MethodInfo(sn_receive_error));
     ADD_SIGNAL(MethodInfo(sn_receive));
     ADD_SIGNAL(MethodInfo(sn_reply));
