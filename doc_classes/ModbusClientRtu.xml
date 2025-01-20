@@ -69,7 +69,7 @@
 				Помещает в очередь запрос на последовательное чтение содержания входных регистров начиная с базового адреса.[br]
 				[param base_addr] - Базовый адрес начала чтения регистров.[br]
 				[param count] - Количество регистров.[br]
-				Результат выполнения запроса передаётся в обработчик сигнала [code]read[/code] 
+				Результат выполнения запроса передаётся в обработчик сигнала [code]read[/code]
 			</description>
 		</method>
 		<method name="request_read_bits">
@@ -80,7 +80,7 @@
 				Помещает в очередь запрос на последовательное чтение содержания одноразрядных регистров начиная с базового адреса.[br]
 				[param base_addr] - Базовый адрес начала чтения регистров.[br]
 				[param count] - Количество регистров.[br]
-				Результат выполнения запроса передаётся в обработчик сигнала [code]read_beats[/code] 
+				Результат выполнения запроса передаётся в обработчик сигнала [code]read_beats[/code]
 			</description>
 		</method>
 		<method name="request_read_input">
@@ -91,7 +91,7 @@
 				Помещает в очередь запрос на последовательное чтение содержания входных регистров начиная с базового адреса.[br]
 				[param base_addr] - Базовый адрес начала чтения регистров.[br]
 				[param count] - Количество регистров.[br]
-				Результат выполнения запроса передаётся в обработчик сигнала [code]read_input[/code] 
+				Результат выполнения запроса передаётся в обработчик сигнала [code]read_input[/code]
 			</description>
 		</method>
 		<method name="request_read_input_bits">
@@ -102,7 +102,7 @@
 				Помещает в очередь запрос на последовательное чтение содержания входных одноразрядных регистров начиная с базового адреса.[br]
 				[param base_addr] - Базовый адрес начала чтения регистров.[br]
 				[param count] - Количество регистров.[br]
-				Результат выполнения запроса передаётся в обработчик сигнала [code]read_input_bits[/code] 
+				Результат выполнения запроса передаётся в обработчик сигнала [code]read_input_bits[/code]
 			</description>
 		</method>
 		<method name="request_write">
@@ -130,7 +130,7 @@
 		<method name="thread_run">
 			<return type="int" enum="Error" />
 			<description>
-				Запускает отдельный поток выполняющий очередь из запросов созданных вызовами [method request_read], [method request_read_input], [method request_read_bits], [method request_read_input_bits], [method request_write], [method request_write_bits]. 
+				Запускает отдельный поток выполняющий очередь из запросов созданных вызовами [method request_read], [method request_read_input], [method request_read_bits], [method request_read_input_bits], [method request_write], [method request_write_bits].
 			</description>
 		</method>
 		<method name="thread_stop">
@@ -212,7 +212,7 @@
 		</signal>
 		<signal name="thread_run">
 			<description>
-				Вызывается после запуска отдельного потока выполняющего очередь из запросов. 
+				Вызывается после запуска отдельного потока выполняющего очередь из запросов.
 			</description>
 		</signal>
 		<signal name="thread_stop">
