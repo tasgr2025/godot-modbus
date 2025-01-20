@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<class name="ModbusClientRtu" inherits="ModbusRtu" version="4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+<class name="ModbusClientRtu" inherits="ModbusRtu" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
 	<brief_description>
 		Клиент Modbus-RTU
 	</brief_description>
@@ -8,95 +8,238 @@
 	</description>
 	<tutorials>
 	</tutorials>
-	<members>
-		<member>
-		</member>
-	</members>
 	<methods>
 		<method name="read">
-			<return type="Error"/>
-			<param index="0" name="base_addr" type="int"/>
-			<param index="1" name="count" type="int"/>
-			<param index="2" name="resp" type="Array"/>
+			<return type="int" enum="Error" />
+			<param index="0" name="base_addr" type="int" />
+			<param index="1" name="count" type="int" />
+			<param index="2" name="resp" type="Array" />
 			<description>
-				Производит чтение регистров.[/br]
-				[param base_addr] - Начальный адрес регистров.[/br]
-				[param count] - Количество регистров.[/br]
-				[param resp] - После вызова, содержит прочитанные из регистров значения.[/br]
-				Возвращает [code]Error.OK[/code] если операция прошла успешно и [code]Error.FAILED[/code] если иначе.[/br]
+				Производит последовательное чтение регистров начиная с базового адреса.[br]
+				[param base_addr] - Базовый адрес начала чтения регистров.[br]
+				[param count] - Количество регистров.[br]
+				[param resp] - После вызова, содержит прочитанные из регистров значения.[br]
+				Возвращает [code]Error.OK[/code] если операция прошла успешно и [code]Error.FAILED[/code] если иначе.[br]
 			</description>
 		</method>
 		<method name="read_bits">
-			<return type="Error"/>
+			<return type="int" enum="Error" />
+			<param index="0" name="base_addr" type="int" />
+			<param index="1" name="count" type="int" />
+			<param index="2" name="resp" type="Array" />
 			<description>
-				Производит последовательное чтение одноразрядных регистров начиная с базового адреса.[/br]
-				[param base_addr] - Начальный адрес регистров.[/br]
-				[param count] - Количество регистров.[/br]
-				[param resp] - После вызова, содержит прочитанные из регистров значения.[/br]
-				Возвращает [code]Error.OK[/code] если операция прошла успешно и [code]Error.FAILED[/code] если иначе.[/br]
+				Производит последовательное чтение одноразрядных регистров начиная с базового адреса.[br]
+				[param base_addr] - Базовый адрес начала чтения регистров.[br]
+				[param count] - Количество регистров.[br]
+				[param resp] - После вызова, содержит прочитанные из регистров значения.[br]
+				Возвращает [code]Error.OK[/code] если операция прошла успешно и [code]Error.FAILED[/code] если иначе.[br]
 			</description>
 		</method>
 		<method name="read_input">
-			<return type="Error"/>
+			<return type="int" enum="Error" />
+			<param index="0" name="base_addr" type="int" />
+			<param index="1" name="count" type="int" />
+			<param index="2" name="resp" type="Array" />
 			<description>
-				Производит последовательное чтение содержания входных регистров начиная с базового адреса.[/br]
-				[param base_addr] - Начальный адрес регистров.[/br]
-				[param count] - Количество регистров.[/br]
-				[param resp] - После вызова, содержит прочитанные из регистров значения.[/br]
-				Возвращает [code]Error.OK[/code] если операция прошла успешно и [code]Error.FAILED[/code] если иначе.[/br]
+				Производит последовательное чтение содержания входных регистров начиная с базового адреса.[br]
+				[param base_addr] - Базовый адрес начала чтения регистров.[br]
+				[param count] - Количество регистров.[br]
+				[param resp] - После вызова, содержит прочитанные из регистров значения.[br]
+				Возвращает [code]Error.OK[/code] если операция прошла успешно и [code]Error.FAILED[/code] если иначе.[br]
+			</description>
+		</method>
+		<method name="read_input_bits">
+			<return type="int" enum="Error" />
+			<param index="0" name="base_addr" type="int" />
+			<param index="1" name="count" type="int" />
+			<param index="2" name="resp" type="Array" />
+			<description>
+				Производит последовательное чтение содержания входных регистров начиная с базового адреса.[br]
+				[param base_addr] - Базовый адрес начала чтения регистров.[br]
+				[param count] - Количество регистров.[br]
+				[param resp] - После вызова, содержит прочитанные из регистров значения.[br]
+				Возвращает [code]Error.OK[/code] если операция прошла успешно и [code]Error.FAILED[/code] если иначе.[br]
+			</description>
+		</method>
+		<method name="request_read">
+			<return type="void" />
+			<param index="0" name="base_addr" type="int" />
+			<param index="1" name="count" type="int" />
+			<description>
+				Помещает в очередь запрос на последовательное чтение содержания входных регистров начиная с базового адреса.[br]
+				[param base_addr] - Базовый адрес начала чтения регистров.[br]
+				[param count] - Количество регистров.[br]
+				Результат выполнения запроса передаётся в обработчик сигнала [code]read[/code] 
+			</description>
+		</method>
+		<method name="request_read_bits">
+			<return type="void" />
+			<param index="0" name="base_addr" type="int" />
+			<param index="1" name="count" type="int" />
+			<description>
+				Помещает в очередь запрос на последовательное чтение содержания одноразрядных регистров начиная с базового адреса.[br]
+				[param base_addr] - Базовый адрес начала чтения регистров.[br]
+				[param count] - Количество регистров.[br]
+				Результат выполнения запроса передаётся в обработчик сигнала [code]read_beats[/code] 
+			</description>
+		</method>
+		<method name="request_read_input">
+			<return type="void" />
+			<param index="0" name="base_addr" type="int" />
+			<param index="1" name="count" type="int" />
+			<description>
+				Помещает в очередь запрос на последовательное чтение содержания входных регистров начиная с базового адреса.[br]
+				[param base_addr] - Базовый адрес начала чтения регистров.[br]
+				[param count] - Количество регистров.[br]
+				Результат выполнения запроса передаётся в обработчик сигнала [code]read_input[/code] 
+			</description>
+		</method>
+		<method name="request_read_input_bits">
+			<return type="void" />
+			<param index="0" name="base_addr" type="int" />
+			<param index="1" name="count" type="int" />
+			<description>
+				Помещает в очередь запрос на последовательное чтение содержания входных одноразрядных регистров начиная с базового адреса.[br]
+				[param base_addr] - Базовый адрес начала чтения регистров.[br]
+				[param count] - Количество регистров.[br]
+				Результат выполнения запроса передаётся в обработчик сигнала [code]read_input_bits[/code] 
+			</description>
+		</method>
+		<method name="request_write">
+			<return type="void" />
+			<param index="0" name="base_addr" type="int" />
+			<param index="1" name="resp" type="Array" />
+			<description>
+				Помещает в очередь запрос на последовательную запись в регистры начиная с базового адреса.[br]
+				[param base_addr] - Базовый адрес начала чтения регистров.[br]
+				[param resp] - Данные для записи в регистры[br]
+				Результат выполнения запроса передаётся в обработчик сигнала [code]write[/code]
+			</description>
+		</method>
+		<method name="request_write_bits">
+			<return type="void" />
+			<param index="0" name="base_addr" type="int" />
+			<param index="1" name="resp" type="Array" />
+			<description>
+				Помещает в очередь запрос на последовательную запись в одноразрядные регистры начиная с базового адреса.[br]
+				[param base_addr] - Базовый адрес начала чтения регистров.[br]
+				[param resp] - Данные для записи в регистры[br]
+				Результат выполнения запроса передаётся в обработчик сигнала [code]write_bits[/code]
+			</description>
+		</method>
+		<method name="thread_run">
+			<return type="int" enum="Error" />
+			<description>
+				Запускает отдельный поток выполняющий очередь из запросов созданных вызовами [method request_read], [method request_read_input], [method request_read_bits], [method request_read_input_bits], [method request_write], [method request_write_bits]. 
+			</description>
+		</method>
+		<method name="thread_stop">
+			<return type="int" enum="Error" />
+			<description>
 			</description>
 		</method>
 		<method name="write">
-			<return type="Error"/>
+			<return type="int" enum="Error" />
+			<param index="0" name="base_addr" type="int" />
+			<param index="1" name="resp" type="Array" />
 			<description>
-				Производит последовательную запись данных в регистры начиная с базового адреса.[/br]
-				[param base_addr] - Начальный адрес регистров.[/br]
-				[param resp] - Данные для записи.[/br]
-				Возвращает [code]Error.OK[/code] если операция прошла успешно и [code]Error.FAILED[/code] если иначе.[/br]
+				Производит последовательную запись данных в регистры начиная с базового адреса.[br]
+				[param base_addr] - Начальный адрес регистров.[br]
+				[param resp] - Данные для записи.[br]
+				Возвращает [code]Error.OK[/code] если операция прошла успешно и [code]Error.FAILED[/code] если иначе.[br]
 			</description>
 		</method>
 		<method name="write_bits">
-			<return type="Error"/>
+			<return type="int" enum="Error" />
+			<param index="0" name="base_addr" type="int" />
+			<param index="1" name="resp" type="Array" />
 			<description>
-				Производит последовательную запись данных в одноразрядные регистры начиная с базового адреса.[/br]
-				[param base_addr] - Начальный адрес регистров.[/br]
-				[param resp] - Данные для записи.[/br]
-				Возвращает [code]Error.OK[/code] если операция прошла успешно и [code]Error.FAILED[/code] если иначе.[/br]
+				Производит последовательную запись данных в одноразрядные регистры начиная с базового адреса.[br]
+				[param base_addr] - Начальный адрес регистров.[br]
+				[param resp] - Данные для записи.[br]
+				Возвращает [code]Error.OK[/code] если операция прошла успешно и [code]Error.FAILED[/code] если иначе.[br]
 			</description>
 		</method>
 	</methods>
 	<signals>
-		<signal name="read">
+		<signal name="queue_empty">
 			<description>
-				Вызывается по завершению операции чтения регистров запущенной вызовом [code]request_read()[code].
-				[param return_code] - Результат выполнения операции: [code]Error.OK[/code] если операция прошла успешно и [code]Error.FAILED[/code] если иначе.[/br]
-				[param base_addr] - Начальный адрес регистров.[/br]
-				[param data] - Данные прочитанные из регистров.[/br]
 			</description>
 		</signal>
-		<signal name="read_input">
+		<signal name="read">
+			<param index="0" name="return_code" type="int" />
+			<param index="1" name="base_addr" type="int" />
+			<param index="2" name="data" type="Array" />
 			<description>
-				Вызывается по завершению операции чтения входных регистров.
+				Вызывается по завершению операции чтения регистров запущенной вызовом [method request_read].
+				[param return_code] - Результат выполнения операции: [code]Error.OK[/code] если операция прошла успешно и [code]Error.FAILED[/code] если иначе.[br]
+				[param base_addr] - Начальный адрес регистров.[br]
+				[param data] - Данные прочитанные из регистров.[br]
 			</description>
 		</signal>
 		<signal name="read_bits">
+			<param index="0" name="return_code" type="int" />
+			<param index="1" name="base_addr" type="int" />
+			<param index="2" name="data" type="Array" />
 			<description>
-				Вызывается по завершению операции чтения одноразрядных регистров.
+				Вызывается по завершению операции чтения одноразрядных регистров запущенной вызовом [method request_read_bits].
+				[param return_code] - Результат выполнения операции: [code]Error.OK[/code] если операция прошла успешно и [code]Error.FAILED[/code] если иначе.[br]
+				[param base_addr] - Начальный адрес регистров.[br]
+				[param data] - Данные прочитанные из регистров.[br]
+			</description>
+		</signal>
+		<signal name="read_input">
+			<param index="0" name="return_code" type="int" />
+			<param index="1" name="base_addr" type="int" />
+			<param index="2" name="data" type="Array" />
+			<description>
+				Вызывается по завершению операции чтения входных регистров запущенной вызовом [method request_read_input].
+				[param return_code] - Результат выполнения операции: [code]Error.OK[/code] если операция прошла успешно и [code]Error.FAILED[/code] если иначе.[br]
+				[param base_addr] - Начальный адрес регистров.[br]
+				[param data] - Данные прочитанные из регистров.[br]
 			</description>
 		</signal>
 		<signal name="read_input_bits">
+			<param index="0" name="return_code" type="int" />
+			<param index="1" name="base_addr" type="int" />
+			<param index="2" name="data" type="Array" />
 			<description>
-				Вызывается по завершению операции чтения одноразрядных входных регистров.
+				Вызывается по завершению операции чтения входных регистров запущенной вызовом [method request_read_input_bits].
+				[param return_code] - Результат выполнения операции: [code]Error.OK[/code] если операция прошла успешно и [code]Error.FAILED[/code] если иначе.[br]
+				[param base_addr] - Начальный адрес регистров.[br]
+				[param data] - Данные прочитанные из регистров.[br]
+			</description>
+		</signal>
+		<signal name="thread_run">
+			<description>
+				Вызывается после запуска отдельного потока выполняющего очередь из запросов. 
+			</description>
+		</signal>
+		<signal name="thread_stop">
+			<description>
+				Вызывается перед выходом из процедуры отдельного потока выполняющего очередь из запросов.
 			</description>
 		</signal>
 		<signal name="write">
+			<param index="0" name="return_code" type="int" />
+			<param index="1" name="base_addr" type="int" />
+			<param index="2" name="data" type="Array" />
 			<description>
-				Вызывается по завершению операции записи в регистры.
+				Вызывается по завершению операции записи в регистры запущенной вызовом [method request_write].
+				[param return_code] - Результат выполнения операции: [code]Error.OK[/code] если операция прошла успешно и [code]Error.FAILED[/code] если иначе.[br]
+				[param base_addr] - Начальный адрес регистров.[br]
+				[param data] - Данные записанные из регистры.[br]
 			</description>
 		</signal>
 		<signal name="write_bits">
+			<param index="0" name="return_code" type="int" />
+			<param index="1" name="base_addr" type="int" />
+			<param index="2" name="data" type="Array" />
 			<description>
-				Вызывается по завершению операции записи в одноразрядные регистры.
+				Вызывается по завершению операции записи в регистры запущенной вызовом [method request_write_bits].
+				[param return_code] - Результат выполнения операции: [code]Error.OK[/code] если операция прошла успешно и [code]Error.FAILED[/code] если иначе.[br]
+				[param base_addr] - Начальный адрес регистров.[br]
+				[param data] - Данные записанные из регистры.[br]
 			</description>
 		</signal>
 	</signals>

@@ -1,16 +1,106 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<class name="ModbusServerRtu" inherits="Object" version="4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+<class name="ModbusServerRtu" inherits="ModbusRtu" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
 	<brief_description>
-	Сервер Modbus-RTU
 	</brief_description>
-	<members>
-		<member>
-		</member>
-	</members>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
 	<methods>
-		<method name="">
-		<return type=""/>
-		<description>
-		</description>
+		<method name="get_bits" qualifiers="const">
+			<return type="Dictionary" />
+			<description>
+			</description>
+		</method>
+		<method name="get_delay">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_input_bits" qualifiers="const">
+			<return type="Dictionary" />
+			<description>
+			</description>
+		</method>
+		<method name="get_input_registers" qualifiers="const">
+			<return type="Dictionary" />
+			<description>
+			</description>
+		</method>
+		<method name="get_mapping">
+			<return type="Dictionary" />
+			<description>
+			</description>
+		</method>
+		<method name="get_registers" qualifiers="const">
+			<return type="Dictionary" />
+			<description>
+			</description>
+		</method>
+		<method name="process">
+			<return type="int" enum="Error" />
+			<description>
+			</description>
+		</method>
+		<method name="set_bits">
+			<return type="int" enum="Error" />
+			<param index="0" name="dic" type="Variant" />
+			<description>
+			</description>
+		</method>
+		<method name="set_delay">
+			<return type="void" />
+			<param index="0" name="delay_usec" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="set_input_bits">
+			<return type="int" enum="Error" />
+			<param index="0" name="dic" type="Variant" />
+			<description>
+			</description>
+		</method>
+		<method name="set_input_registers">
+			<return type="int" enum="Error" />
+			<param index="0" name="dic" type="Variant" />
+			<description>
+			</description>
+		</method>
+		<method name="set_mapping">
+			<return type="int" enum="Error" />
+			<param index="0" name="dic" type="Variant" />
+			<description>
+			</description>
+		</method>
+		<method name="set_registers">
+			<return type="int" enum="Error" />
+			<param index="0" name="dic" type="Variant" />
+			<description>
+			</description>
+		</method>
+		<method name="thread_run">
+			<return type="int" enum="Error" />
+			<description>
+			</description>
+		</method>
+		<method name="thread_stop">
+			<return type="int" enum="Error" />
+			<description>
+			</description>
+		</method>
 	</methods>
+	<signals>
+		<signal name="receive">
+			<description>
+			</description>
+		</signal>
+		<signal name="receive_error">
+			<description>
+			</description>
+		</signal>
+		<signal name="reply">
+			<description>
+			</description>
+		</signal>
+	</signals>
 </class>
