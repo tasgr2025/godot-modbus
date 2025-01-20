@@ -109,7 +109,7 @@ protected:
     std::condition_variable cv;
     bool resume_thread {false};
     std::atomic<bool> run_thread {true};
-private:    
+private:
     List<TaskItem> queue;
     /** Добавляет запрос на запись в порты
      * task - код задания
