@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="ModbusServerRtu" inherits="ModbusRtu" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
 	<brief_description>
+		Сервер Modbus-RTU
 	</brief_description>
 	<description>
+		Выполняет обмен данными по последовательному порту в соответствии с протоколом Modbus в качестве сервера (исполнительное устройство).
 	</description>
 	<tutorials>
 	</tutorials>
@@ -10,96 +12,127 @@
 		<method name="get_bits" qualifiers="const">
 			<return type="Dictionary" />
 			<description>
+				Возвращает содержание однобитных регистров в словаре содержащем пары ключей и значений: ключ - адрес регистра, значение - содержание регистра.
 			</description>
 		</method>
 		<method name="get_delay">
 			<return type="int" />
 			<description>
+				Возвращает величину времени задержки в мкс добавляемой после завершения обработки запроса от клиента. Влияет только на цикл внутри потока запускаемого возовом [method thread_run].
 			</description>
 		</method>
 		<method name="get_input_bits" qualifiers="const">
 			<return type="Dictionary" />
 			<description>
+				Возвращает содержание одноразрядных входных регистров в словаре содержащем пары ключей и значений: ключ - адрес регистра, значение - содержание регистра.
 			</description>
 		</method>
 		<method name="get_input_registers" qualifiers="const">
 			<return type="Dictionary" />
 			<description>
+				Возвращает содержание входных регистров в словаре содержащем пары ключей и значений: ключ - адрес регистра, значение - содержание регистра.
 			</description>
 		</method>
 		<method name="get_mapping">
 			<return type="Dictionary" />
 			<description>
+				Возвращает распределение регистров в памяти. Назначение ключей словаря:
+				[code]"nb_bits"[/code] - количество одноразрядных регистров;
+				[code]"start_bits"[/code] - начальный адрес одноразрядных регистров;
+				[code]"nb_input_bits"[/code] - количество входных одноразрядных регистров;
+				[code]"start_input_bits"[/code] - начальный адрес входных одноразрядных регистров;
+				[code]"nb_input_registers"[/code] - количество входных регистров;
+				[code]"start_input_registers"[/code] - начальный адрес входных регистров;
+				[code]"nb_registers"[/code] - количество регистров;
+				[code]"start_registers"[/code] - начальный адрес входных регистров.
+				Все ключи имеют тип [code]String[/code].
 			</description>
 		</method>
 		<method name="get_registers" qualifiers="const">
 			<return type="Dictionary" />
 			<description>
+				Возвращает содержание регистров в словаре содержащем пары ключей и значений: ключ - адрес регистра, значение - содержание регистра.
 			</description>
 		</method>
 		<method name="process">
 			<return type="int" enum="Error" />
 			<description>
+				Производит обработку запросов от клиента. Принимает запросы и отправляет ответы на них. Для поддержания связи с клиентом, должен вызываться непрерывно.
+				[b]Возвращает:[/b]
+				[code]Error.ERR_BUSY[/code] - нужно продолжить приём сообщений;
+				[code]Error.FAILED[/code] - при обработке сообщения от клиента возникла ошибка;
+				[code]Error.OK[/code] - запрос от клиента обработан и ответ отправлен.
 			</description>
 		</method>
 		<method name="set_bits">
 			<return type="int" enum="Error" />
 			<param index="0" name="dic" type="Variant" />
 			<description>
+				Задаёт содержание одноразрядных регистров значениям указаными в [param dic]: ключ - адрес регистра, значение - новое содержание регистра.
 			</description>
 		</method>
 		<method name="set_delay">
 			<return type="void" />
 			<param index="0" name="delay_usec" type="int" />
 			<description>
+				Задаёт время задержки в мкс добавляемой после завершения обработки запроса от клиента. Влияет только на цикл внутри потока запускаемого возовом [method thread_run].
 			</description>
 		</method>
 		<method name="set_input_bits">
 			<return type="int" enum="Error" />
 			<param index="0" name="dic" type="Variant" />
 			<description>
+				Задаёт содержание входных одноразрядных регистров значениям указаными в [param dic]: ключ - адрес регистра, значение - новое содержание регистра.
 			</description>
 		</method>
 		<method name="set_input_registers">
 			<return type="int" enum="Error" />
 			<param index="0" name="dic" type="Variant" />
 			<description>
+				Задаёт содержание входных регистров значениям указаными в [param dic]: ключ - адрес регистра, значение - новое содержание регистра.
 			</description>
 		</method>
 		<method name="set_mapping">
 			<return type="int" enum="Error" />
 			<param index="0" name="dic" type="Variant" />
 			<description>
+				Задаёт распределение регистров в памяти значениям указаными в [param dic]. Назначение ключей словаря указано в [method get_mapping].
 			</description>
 		</method>
 		<method name="set_registers">
 			<return type="int" enum="Error" />
 			<param index="0" name="dic" type="Variant" />
 			<description>
+				Задаёт содержание регистров значениям указаными в [param dic]: ключ - адрес регистра, значение - новое содержание регистра.
 			</description>
 		</method>
 		<method name="thread_run">
 			<return type="int" enum="Error" />
 			<description>
+				Запускает выделенный поток обработки запросов от клиента. После вызова, будут вызываться сигналы [signal ModbusServerRtu.receive], [signal ModbusServerRtu.receive_error] и [signal ModbusServerRtu.reply].
 			</description>
 		</method>
 		<method name="thread_stop">
 			<return type="int" enum="Error" />
 			<description>
+				Останавливает выделенный поток обработки запросов от клиента. После вызова, сигналы [signal ModbusServerRtu.receive], [signal ModbusServerRtu.receive_error], [signal ModbusServerRtu.reply] вызываться не будут.
 			</description>
 		</method>
 	</methods>
 	<signals>
 		<signal name="receive">
 			<description>
+				Вызывается после приёма запроса от клиента.
 			</description>
 		</signal>
 		<signal name="receive_error">
 			<description>
+				Вызывается если при приёме запроса от клиента возникла ошибка.
 			</description>
 		</signal>
 		<signal name="reply">
 			<description>
+				Вызывается после успешной отправки ответа на запрос от клиента.
 			</description>
 		</signal>
 	</signals>
