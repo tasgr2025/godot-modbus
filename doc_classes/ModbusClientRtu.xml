@@ -130,7 +130,7 @@
 		<method name="thread_run">
 			<return type="int" enum="Error" />
 			<description>
-				Запускает отдельный поток выполняющий очередь из запросов созданных вызовами [method request_read], [method request_read_input], [method request_read_bits], [method request_read_input_bits], [method request_write], [method request_write_bits].
+				Запускает отдельный поток для выполнения очереди из запросов созданных вызовами [method request_read], [method request_read_input], [method request_read_bits], [method request_read_input_bits], [method request_write], [method request_write_bits].
 			</description>
 		</method>
 		<method name="thread_stop">
