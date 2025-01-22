@@ -9,7 +9,7 @@
 	<tutorials>
 	</tutorials>
 	<methods>
-		<method name="get_bits" qualifiers="const">
+		<method name="get_bits">
 			<return type="Dictionary" />
 			<description>
 				Возвращает содержание однобитных регистров в словаре содержащем пары ключей и значений: ключ - адрес регистра, значение - содержание регистра.
@@ -18,16 +18,16 @@
 		<method name="get_delay">
 			<return type="int" />
 			<description>
-				Возвращает величину времени задержки в мкс добавляемой после завершения обработки запроса от клиента. Влияет только на цикл внутри потока запускаемого возовом [method thread_run].
+				Возвращает величину времени задержки в мкс добавляемой после завершения обработки запроса. Влияет только на цикл внутри потока запускаемого возовом [method thread_run].
 			</description>
 		</method>
-		<method name="get_input_bits" qualifiers="const">
+		<method name="get_input_bits">
 			<return type="Dictionary" />
 			<description>
 				Возвращает содержание одноразрядных входных регистров в словаре содержащем пары ключей и значений: ключ - адрес регистра, значение - содержание регистра.
 			</description>
 		</method>
-		<method name="get_input_registers" qualifiers="const">
+		<method name="get_input_registers">
 			<return type="Dictionary" />
 			<description>
 				Возвращает содержание входных регистров в словаре содержащем пары ключей и значений: ключ - адрес регистра, значение - содержание регистра.
@@ -48,7 +48,7 @@
 				Все ключи имеют тип [code]String[/code].
 			</description>
 		</method>
-		<method name="get_registers" qualifiers="const">
+		<method name="get_registers">
 			<return type="Dictionary" />
 			<description>
 				Возвращает содержание регистров в словаре содержащем пары ключей и значений: ключ - адрес регистра, значение - содержание регистра.
@@ -57,11 +57,11 @@
 		<method name="process">
 			<return type="int" enum="Error" />
 			<description>
-				Производит обработку запросов от клиента. Принимает запросы и отправляет ответы на них. Для поддержания связи с клиентом, должен вызываться непрерывно.
+				Производит обработку запросов. Принимает запросы и отправляет ответы на них. Для поддержания связи с клиентом, должен вызываться непрерывно.
 				[b]Возвращает:[/b]
 				[code]Error.ERR_BUSY[/code] - нужно продолжить приём сообщений;
-				[code]Error.FAILED[/code] - при обработке сообщения от клиента возникла ошибка;
-				[code]Error.OK[/code] - запрос от клиента обработан и ответ отправлен.
+				[code]Error.FAILED[/code] - при обработке сообщения возникла ошибка;
+				[code]Error.OK[/code] - запрос обработан и ответ отправлен.
 			</description>
 		</method>
 		<method name="set_bits">
@@ -75,7 +75,7 @@
 			<return type="void" />
 			<param index="0" name="delay_usec" type="int" />
 			<description>
-				Задаёт время задержки в мкс добавляемой после завершения обработки запроса от клиента. Влияет только на цикл внутри потока запускаемого возовом [method thread_run].
+				Задаёт время задержки в мкс добавляемой после завершения обработки запроса. Влияет только на цикл внутри потока запускаемого возовом [method thread_run].
 			</description>
 		</method>
 		<method name="set_input_bits">

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="ModbusRtu" inherits="Object" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
 	<brief_description>
-		Базовый класс для реализации клиента и сервера Modbus-RTU.
+		База Modbus-RTU.
 	</brief_description>
 	<description>
+		Базовый класс для реализации клиента и сервера Modbus-RTU. Создавать экземпляры этого класса не имеет смысла.
 	</description>
 	<tutorials>
 	</tutorials>
@@ -11,99 +12,125 @@
 		<method name="close">
 			<return type="void" />
 			<description>
+				Закрывает порт и соединение.
 			</description>
 		</method>
 		<method name="flush">
 			<return type="int" enum="Error" />
 			<description>
+				Сбрасывает данные в приёмном и передающем буферах.
 			</description>
 		</method>
 		<method name="get_byte_timeout">
 			<return type="float" />
 			<description>
+				Возвращает максимальное время в [b]мкс[/b] между байтами, после которого пакет считается принятым.
 			</description>
 		</method>
 		<method name="get_debug">
 			<return type="bool" />
 			<description>
+				Возвращает режим вывода отладочных сообщений в консоль: [code]true[/code] - отладочные сообщения выводятся. По умолчанию отладочные сообщения не выводятся ([code]false[/code]).
 			</description>
 		</method>
 		<method name="get_error_recovery">
 			<return type="bool" />
 			<description>
+				Возвращает режим восстановления после ошибок: [code]true[/code] - задействован, [code]false[/code] - отключён.
 			</description>
 		</method>
 		<method name="get_indication_timeout">
 			<return type="float" />
 			<description>
+				Длительность времени, используемого для ожидания индикации. Индикация - это термин, используемый протоколом Modbus для обозначения запроса, полученного сервером. Значение по умолчанию равно нулю, это означает, что сервер будет ждать вечно.
 			</description>
 		</method>
 		<method name="get_response_timeout">
 			<return type="float" />
 			<description>
+				Возвращает интервал времени, используемого для ожидания ответа в мкс.
 			</description>
 		</method>
 		<method name="get_socket">
 			<return type="int" />
 			<description>
+				Возвращает файловый дескриптор используемого последовательного порта.
 			</description>
 		</method>
 		<method name="is_open" qualifiers="const">
 			<return type="bool" />
 			<description>
+				Возвращает состояние последовательного порта: [code]true[/code] - порт открыт, [code]false[/code] - порт закрыт.
 			</description>
 		</method>
 		<method name="open">
 			<return type="int" enum="Error" />
-			<param index="0" name="_unnamed_arg0" type="String" />
-			<param index="1" name="_unnamed_arg1" type="int" />
-			<param index="2" name="_unnamed_arg2" type="int" />
-			<param index="3" name="_unnamed_arg3" type="String" />
-			<param index="4" name="_unnamed_arg4" type="int" />
-			<param index="5" name="_unnamed_arg5" type="int" />
+			<param index="0" name="device" type="String" />
+			<param index="1" name="slave_id" type="int" />
+			<param index="2" name="baud" type="int" />
+			<param index="3" name="parity" type="String" />
+			<param index="4" name="data_bit" type="int" />
+			<param index="5" name="stop_bit" type="int" />
 			<description>
+				Открывает порт для установки соединения с задаными параметрами:
+				[param port_name] - Имя устройства порта;
+				[param slave_id] - Адрес устройства Modbus;
+				[param baud_rate] - Скорость передачи данных;
+				[param parity] - Контроль чётности: 'N' - нет, 'E' - чётный 'O' - нечётный;
+				[param bits] - Количество бит данных;
+				[param stop_bits] - Количество стопбит.
 			</description>
 		</method>
 		<method name="report_slave_id">
 			<return type="int" enum="Error" />
-			<param index="0" name="_unnamed_arg0" type="Array" />
+			<param index="0" name="resp" type="Array" />
 			<description>
+				Получить описание контроллера. После вызова, [param resp] содержит описание контроллера:
+				- ID ведомого, этот уникальный ID на самом деле совсем не уникален, поэтому на его основе невозможно определить, как упакована информация в ответе.
+				- статус индикатора работы ([code]0x00 = OFF, 0xFF = ON[/code])
+				- дополнительные данные, специфичные для каждого контроллера. Например, [b]libmodbus[/b] возвращает версию библиотеки в виде строки.
 			</description>
 		</method>
 		<method name="set_byte_timeout">
 			<return type="int" enum="Error" />
-			<param index="0" name="_unnamed_arg0" type="float" />
+			<param index="0" name="val" type="float" />
 			<description>
+				Задаёт максимальное время в [b]мкс[/b] между байтами, после которого пакет байт считается принятым.
 			</description>
 		</method>
 		<method name="set_debug">
 			<return type="int" enum="Error" />
-			<param index="0" name="_unnamed_arg0" type="bool" />
+			<param index="0" name="val" type="bool" />
 			<description>
+				Задаёт режим вывода отладочных сообщений в консоль: [code]true[/code] - отладочные сообщения выводятся. По умолчанию отладочные сообщения не выводятся ([code]false[/code]).
 			</description>
 		</method>
 		<method name="set_error_recovery">
 			<return type="int" enum="Error" />
-			<param index="0" name="_unnamed_arg0" type="bool" />
+			<param index="0" name="val" type="bool" />
 			<description>
+				Задаёт режим восстановления после ошибок: [code]true[/code] - задействовать, [code]false[/code] - отключить.
 			</description>
 		</method>
 		<method name="set_indication_timeout">
 			<return type="int" enum="Error" />
-			<param index="0" name="_unnamed_arg0" type="float" />
+			<param index="0" name="val" type="float" />
 			<description>
+				Задаёт длительность времени, используемого для ожидания индикации. Индикация - это термин, используемый протоколом [b]Modbus[/b] для обозначения запроса, полученного сервером. Устанавливают в ноль, что бы сервер ждал вечно.
 			</description>
 		</method>
 		<method name="set_response_timeout">
 			<return type="int" enum="Error" />
-			<param index="0" name="_unnamed_arg0" type="float" />
+			<param index="0" name="val" type="float" />
 			<description>
+				Задаёт интервал времени, используемого для ожидания ответа в мкс.
 			</description>
 		</method>
 		<method name="set_socket">
 			<return type="int" enum="Error" />
-			<param index="0" name="_unnamed_arg0" type="int" />
+			<param index="0" name="val" type="int" />
 			<description>
+				Заменяет используемый файловый дескриптор последовательного порта на указанный [param val].
 			</description>
 		</method>
 	</methods>

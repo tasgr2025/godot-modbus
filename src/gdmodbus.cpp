@@ -49,23 +49,23 @@ Error ModbusRtu::open(
 
 
 void ModbusRtu::_bind_methods() {
-    ClassDB::bind_method(D_METHOD("open"),                   &ModbusRtu::open);
-    ClassDB::bind_method(D_METHOD("close"),                  &ModbusRtu::close);
-    ClassDB::bind_method(D_METHOD("is_open"),                &ModbusRtu::is_open);
-    ClassDB::bind_method(D_METHOD("flush"),                  &ModbusRtu::flush);
-    ClassDB::bind_method(D_METHOD("set_debug"),              &ModbusRtu::set_debug);
-    ClassDB::bind_method(D_METHOD("get_debug"),              &ModbusRtu::get_debug);
-    ClassDB::bind_method(D_METHOD("set_socket"),             &ModbusRtu::set_socket);
-    ClassDB::bind_method(D_METHOD("get_socket"),             &ModbusRtu::get_socket);
-    ClassDB::bind_method(D_METHOD("report_slave_id"),        &ModbusRtu::report_slave_id);
-    ClassDB::bind_method(D_METHOD("get_indication_timeout"), &ModbusRtu::get_indication_timeout);
-    ClassDB::bind_method(D_METHOD("set_indication_timeout"), &ModbusRtu::set_indication_timeout);
-    ClassDB::bind_method(D_METHOD("get_response_timeout"),   &ModbusRtu::get_response_timeout);
-    ClassDB::bind_method(D_METHOD("set_response_timeout"),   &ModbusRtu::set_response_timeout);
-    ClassDB::bind_method(D_METHOD("get_byte_timeout"),       &ModbusRtu::get_byte_timeout);
-    ClassDB::bind_method(D_METHOD("set_byte_timeout"),       &ModbusRtu::set_byte_timeout);
-    ClassDB::bind_method(D_METHOD("get_error_recovery"),     &ModbusRtu::get_error_recovery);
-    ClassDB::bind_method(D_METHOD("set_error_recovery"),     &ModbusRtu::set_error_recovery);
+    ClassDB::bind_method(D_METHOD("open", "device", "slave_id", "baud", "parity", "data_bit", "stop_bit"), &ModbusRtu::open);
+    ClassDB::bind_method(D_METHOD("close"),                         &ModbusRtu::close);
+    ClassDB::bind_method(D_METHOD("is_open"),                       &ModbusRtu::is_open);
+    ClassDB::bind_method(D_METHOD("flush"),                         &ModbusRtu::flush);
+    ClassDB::bind_method(D_METHOD("set_debug", "val"),              &ModbusRtu::set_debug);
+    ClassDB::bind_method(D_METHOD("get_debug"),                     &ModbusRtu::get_debug);
+    ClassDB::bind_method(D_METHOD("set_socket", "val"),             &ModbusRtu::set_socket);
+    ClassDB::bind_method(D_METHOD("get_socket"),                    &ModbusRtu::get_socket);
+    ClassDB::bind_method(D_METHOD("report_slave_id", "resp"),       &ModbusRtu::report_slave_id);
+    ClassDB::bind_method(D_METHOD("get_indication_timeout"),        &ModbusRtu::get_indication_timeout);
+    ClassDB::bind_method(D_METHOD("set_indication_timeout", "val"), &ModbusRtu::set_indication_timeout);
+    ClassDB::bind_method(D_METHOD("get_response_timeout"),          &ModbusRtu::get_response_timeout);
+    ClassDB::bind_method(D_METHOD("set_response_timeout", "val"),   &ModbusRtu::set_response_timeout);
+    ClassDB::bind_method(D_METHOD("get_byte_timeout"),              &ModbusRtu::get_byte_timeout);
+    ClassDB::bind_method(D_METHOD("set_byte_timeout", "val"),       &ModbusRtu::set_byte_timeout);
+    ClassDB::bind_method(D_METHOD("get_error_recovery"),            &ModbusRtu::get_error_recovery);
+    ClassDB::bind_method(D_METHOD("set_error_recovery", "val"),     &ModbusRtu::set_error_recovery);
 }
 
 

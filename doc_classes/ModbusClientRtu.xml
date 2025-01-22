@@ -9,6 +9,12 @@
 	<tutorials>
 	</tutorials>
 	<methods>
+		<method name="get_queue_size">
+			<return type="int" />
+			<description>
+				Возвращает количество запросов в очереди.
+			</description>
+		</method>
 		<method name="read">
 			<return type="int" enum="Error" />
 			<param index="0" name="base_addr" type="int" />
@@ -171,7 +177,7 @@
 			<param index="1" name="base_addr" type="int" />
 			<param index="2" name="data" type="Array" />
 			<description>
-				Вызывается по завершению операции чтения регистров запущенной вызовом [method request_read].
+				Вызывается по завершению операции чтения регистров [method request_read].
 				[param return_code] - Результат выполнения операции: [code]Error.OK[/code] если операция прошла успешно и [code]Error.FAILED[/code] если иначе.
 				[param base_addr] - Начальный адрес регистров.
 				[param data] - Данные прочитанные из регистров.
@@ -182,7 +188,7 @@
 			<param index="1" name="base_addr" type="int" />
 			<param index="2" name="data" type="Array" />
 			<description>
-				Вызывается по завершению операции чтения одноразрядных регистров запущенной вызовом [method request_read_bits].
+				Вызывается по завершению операции чтения одноразрядных регистров [method request_read_bits].
 				[param return_code] - Результат выполнения операции: [code]Error.OK[/code] если операция прошла успешно и [code]Error.FAILED[/code] если иначе.
 				[param base_addr] - Начальный адрес регистров.
 				[param data] - Данные прочитанные из регистров.
@@ -193,7 +199,7 @@
 			<param index="1" name="base_addr" type="int" />
 			<param index="2" name="data" type="Array" />
 			<description>
-				Вызывается по завершению операции чтения входных регистров запущенной вызовом [method request_read_input].
+				Вызывается по завершению операции чтения входных регистров [method request_read_input].
 				[param return_code] - Результат выполнения операции: [code]Error.OK[/code] если операция прошла успешно и [code]Error.FAILED[/code] если иначе.
 				[param base_addr] - Начальный адрес регистров.
 				[param data] - Данные прочитанные из регистров.
@@ -204,7 +210,7 @@
 			<param index="1" name="base_addr" type="int" />
 			<param index="2" name="data" type="Array" />
 			<description>
-				Вызывается по завершению операции чтения входных регистров запущенной вызовом [method request_read_input_bits].
+				Вызывается по завершению операции чтения входных регистров [method request_read_input_bits].
 				[param return_code] - Результат выполнения операции: [code]Error.OK[/code] если операция прошла успешно и [code]Error.FAILED[/code] если иначе.
 				[param base_addr] - Начальный адрес регистров.
 				[param data] - Данные прочитанные из регистров.
@@ -225,10 +231,10 @@
 			<param index="1" name="base_addr" type="int" />
 			<param index="2" name="data" type="Array" />
 			<description>
-				Вызывается по завершению операции записи в регистры запущенной вызовом [method request_write].
+				Вызывается по завершению операции записи в регистры [method request_write].
 				[param return_code] - Результат выполнения операции: [code]Error.OK[/code] если операция прошла успешно и [code]Error.FAILED[/code] если иначе.
 				[param base_addr] - Начальный адрес регистров.
-				[param data] - Данные записанные из регистры.
+				[param data] - Данные записанные в регистры.
 			</description>
 		</signal>
 		<signal name="write_bits">
@@ -236,10 +242,10 @@
 			<param index="1" name="base_addr" type="int" />
 			<param index="2" name="data" type="Array" />
 			<description>
-				Вызывается по завершению операции записи в регистры запущенной вызовом [method request_write_bits].
+				Вызывается по завершению операции записи в регистры [method request_write_bits].
 				[param return_code] - Результат выполнения операции: [code]Error.OK[/code] если операция прошла успешно и [code]Error.FAILED[/code] если иначе.
 				[param base_addr] - Начальный адрес регистров.
-				[param data] - Данные записанные из регистры.
+				[param data] - Данные записанные в регистры.
 			</description>
 		</signal>
 	</signals>
