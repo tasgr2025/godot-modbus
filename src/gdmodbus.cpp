@@ -568,6 +568,7 @@ Error ModbusServerRtu::process() {
     else if ((rc == -1) && (errno != EMBBADCRC)) {
         call_deferred(sn_emit_signal, sn_receive_error);
         return Error::FAILED;
+    }
     call_deferred(sn_emit_signal, sn_receive);
     int rsp_length = compute_response_length_from_request(ctx, query);
     if (modbus_reply(ctx, query, rsp_length, mb_mapping) == -1) {
