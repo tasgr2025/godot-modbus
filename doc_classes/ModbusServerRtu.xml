@@ -109,30 +109,35 @@
 		<method name="thread_run">
 			<return type="int" enum="Error" />
 			<description>
-				Запускает выделенный поток обработки запросов от клиента. После вызова, будут вызываться сигналы [signal ModbusServerRtu.receive], [signal ModbusServerRtu.receive_error] и [signal ModbusServerRtu.reply].
+				Запускает выделенный поток обработки запросов. После вызова, будут вызываться сигналы [signal ModbusServerRtu.receive], [signal ModbusServerRtu.receive_error] и [signal ModbusServerRtu.reply].
 			</description>
 		</method>
 		<method name="thread_stop">
 			<return type="int" enum="Error" />
 			<description>
-				Останавливает выделенный поток обработки запросов от клиента. После вызова, сигналы [signal ModbusServerRtu.receive], [signal ModbusServerRtu.receive_error], [signal ModbusServerRtu.reply] вызываться не будут.
+				Останавливает выделенный поток обработки запросов. После вызова, сигналы [signal ModbusServerRtu.receive], [signal ModbusServerRtu.receive_error], [signal ModbusServerRtu.reply] и [signal ModbusServerRtu.reply_failed] вызываться не будут.
 			</description>
 		</method>
 	</methods>
 	<signals>
 		<signal name="receive">
 			<description>
-				Вызывается после приёма запроса от клиента.
+				Вызывается после приёма запроса.
 			</description>
 		</signal>
 		<signal name="receive_error">
 			<description>
-				Вызывается если при приёме запроса от клиента возникла ошибка.
+				Вызывается если при приёме запроса возникла ошибка.
 			</description>
 		</signal>
 		<signal name="reply">
 			<description>
-				Вызывается после успешной отправки ответа на запрос от клиента.
+				Вызывается после успешной отправки ответа на запрос.
+			</description>
+		</signal>
+		<signal name="sn_reply_failed">
+			<description>
+				Вызывается если при формировании ответа на запрос возникла ошибка.
 			</description>
 		</signal>
 	</signals>

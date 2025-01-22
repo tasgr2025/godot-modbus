@@ -13,6 +13,7 @@ static const char* sn_thread_run      = "thread_run";
 static const char* sn_thread_stop     = "thread_stop";
 static const char* sn_receive         = "receive";
 static const char* sn_reply           = "reply";
+static const char* sn_reply_failed    = "sn_reply_failed";
 static const char* sn_receive_error   = "receive_error";
 
 
@@ -53,6 +54,7 @@ void ModbusRtu::_bind_methods() {
     ClassDB::bind_method(D_METHOD("is_open"),                &ModbusRtu::is_open);
     ClassDB::bind_method(D_METHOD("flush"),                  &ModbusRtu::flush);
     ClassDB::bind_method(D_METHOD("set_debug"),              &ModbusRtu::set_debug);
+    ClassDB::bind_method(D_METHOD("get_debug"),              &ModbusRtu::get_debug);
     ClassDB::bind_method(D_METHOD("set_socket"),             &ModbusRtu::set_socket);
     ClassDB::bind_method(D_METHOD("get_socket"),             &ModbusRtu::get_socket);
     ClassDB::bind_method(D_METHOD("report_slave_id"),        &ModbusRtu::report_slave_id);
@@ -63,6 +65,7 @@ void ModbusRtu::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_byte_timeout"),       &ModbusRtu::get_byte_timeout);
     ClassDB::bind_method(D_METHOD("set_byte_timeout"),       &ModbusRtu::set_byte_timeout);
     ClassDB::bind_method(D_METHOD("get_error_recovery"),     &ModbusRtu::get_error_recovery);
+    ClassDB::bind_method(D_METHOD("set_error_recovery"),     &ModbusRtu::set_error_recovery);
 }
 
 
@@ -220,7 +223,7 @@ Error ModbusClientRtu::read(int base_addr, int count, Array resp) {
     if (rc == -1) {
         return Error::FAILED;
     }
-    for(size_t i = 0; i < count; i++) {
+    for (size_t i = 0; i < count; i++) {
         resp.append(static_cast<int>(resp_data[i]));
     }
     return Error::OK;
@@ -562,16 +565,16 @@ Error ModbusServerRtu::process() {
     if (rc == 0) {
         return Error::ERR_BUSY;
     }
-    else if (rc == -1 && errno != EMBBADCRC) {
-        call_deferred(sn_receive_error);
+    else if ((rc == -1) && (errno != EMBBADCRC)) {
+        call_deferred(sn_emit_signal, sn_receive_error);
         return Error::FAILED;
-    }
-    call_deferred(sn_receive);
+    call_deferred(sn_emit_signal, sn_receive);
     int rsp_length = compute_response_length_from_request(ctx, query);
     if (modbus_reply(ctx, query, rsp_length, mb_mapping) == -1) {
+        call_deferred(sn_emit_signal, sn_reply_failed);
         return Error::FAILED;
     }
-    call_deferred(sn_reply);
+    call_deferred(sn_emit_signal, sn_reply);
     return Error::OK;
 }
 
@@ -779,4 +782,5 @@ void ModbusServerRtu::_bind_methods() {
     ADD_SIGNAL(MethodInfo(sn_receive_error));
     ADD_SIGNAL(MethodInfo(sn_receive));
     ADD_SIGNAL(MethodInfo(sn_reply));
+    ADD_SIGNAL(MethodInfo(sn_reply_failed));
 }
