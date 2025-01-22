@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="ModbusRtu" inherits="Object" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../doc/class.xsd">
+	<brief_description>
+		Базовый класс для реализации клиента и сервера Modbus-RTU.
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="close">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="flush">
+			<return type="int" enum="Error" />
+			<description>
+			</description>
+		</method>
+		<method name="get_byte_timeout">
+			<return type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="get_debug">
+			<return type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="get_error_recovery">
+			<return type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="get_indication_timeout">
+			<return type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="get_response_timeout">
+			<return type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="get_socket">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="is_open" qualifiers="const">
+			<return type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="open">
+			<return type="int" enum="Error" />
+			<param index="0" name="_unnamed_arg0" type="String" />
+			<param index="1" name="_unnamed_arg1" type="int" />
+			<param index="2" name="_unnamed_arg2" type="int" />
+			<param index="3" name="_unnamed_arg3" type="String" />
+			<param index="4" name="_unnamed_arg4" type="int" />
+			<param index="5" name="_unnamed_arg5" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="report_slave_id">
+			<return type="int" enum="Error" />
+			<param index="0" name="_unnamed_arg0" type="Array" />
+			<description>
+			</description>
+		</method>
+		<method name="set_byte_timeout">
+			<return type="int" enum="Error" />
+			<param index="0" name="_unnamed_arg0" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="set_debug">
+			<return type="int" enum="Error" />
+			<param index="0" name="_unnamed_arg0" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="set_error_recovery">
+			<return type="int" enum="Error" />
+			<param index="0" name="_unnamed_arg0" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="set_indication_timeout">
+			<return type="int" enum="Error" />
+			<param index="0" name="_unnamed_arg0" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="set_response_timeout">
+			<return type="int" enum="Error" />
+			<param index="0" name="_unnamed_arg0" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="set_socket">
+			<return type="int" enum="Error" />
+			<param index="0" name="_unnamed_arg0" type="int" />
+			<description>
+			</description>
+		</method>
+	</methods>
+</class>

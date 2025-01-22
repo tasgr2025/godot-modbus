@@ -8,7 +8,7 @@ def configure(env):
 
 def get_doc_classes():
     return [
-        "ModbusRTU",
+        "ModbusRtu",
         "ModbusClientRtu",
         "ModbusServerRtu" ]
 
