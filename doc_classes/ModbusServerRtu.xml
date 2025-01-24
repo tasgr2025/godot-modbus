@@ -109,13 +109,13 @@
 		<method name="thread_run">
 			<return type="int" enum="Error" />
 			<description>
-				Запускает выделенный поток обработки запросов. После вызова, будут вызываться сигналы [signal ModbusServerRtu.receive], [signal ModbusServerRtu.receive_error] и [signal ModbusServerRtu.reply].
+				Запускает выделенный поток обработки запросов. После вызова, могут быть получены сигналы [signal ModbusServerRtu.receive], [signal ModbusServerRtu.receive_error] и [signal ModbusServerRtu.reply].
 			</description>
 		</method>
 		<method name="thread_stop">
 			<return type="int" enum="Error" />
 			<description>
-				Останавливает выделенный поток обработки запросов. После вызова, сигналы [signal ModbusServerRtu.receive], [signal ModbusServerRtu.receive_error], [signal ModbusServerRtu.reply] и [signal ModbusServerRtu.reply_failed] вызываться не будут.
+				Останавливает выделенный поток обработки запросов. После вызова, сигналы [signal ModbusServerRtu.receive], [signal ModbusServerRtu.receive_error], [signal ModbusServerRtu.reply] и [signal ModbusServerRtu.reply_failed] получены не будут.
 			</description>
 		</method>
 	</methods>
