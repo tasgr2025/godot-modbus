@@ -31,7 +31,6 @@ public:
     const String &parity    = "N",
     int           bits      = 8,
     int           stop_bits = 1);
-    /** Завершает соединения. После вызова все дескрипторы становятся недостоверными. */
     void close();
     String get_libmodbus_version() const { return String(LIBMODBUS_VERSION_STRING); }
     ~ModbusRtu() { close(); }
