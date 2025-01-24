@@ -515,6 +515,9 @@ void ModbusClientRtu::_bind_methods() {
     ClassDB::bind_method(D_METHOD("request_write",      "base_addr", "resp"), &ModbusClientRtu::request_write);
     ClassDB::bind_method(D_METHOD("request_write_bits", "base_addr", "resp"), &ModbusClientRtu::request_write_bits);
 
+    ClassDB::bind_method(D_METHOD("get_queue_size"), &ModbusClientRtu::get_queue_size);
+    ClassDB::bind_method(D_METHOD("queue_clear"), &ModbusClientRtu::queue_clear);
+
     ADD_SIGNAL(MethodInfo(sn_read,            PropertyInfo(Variant::INT, "return_code"), PropertyInfo(Variant::INT, "base_addr"), PropertyInfo(Variant::ARRAY, "data")));
     ADD_SIGNAL(MethodInfo(sn_read_bits,       PropertyInfo(Variant::INT, "return_code"), PropertyInfo(Variant::INT, "base_addr"), PropertyInfo(Variant::ARRAY, "data")));
     ADD_SIGNAL(MethodInfo(sn_read_input,      PropertyInfo(Variant::INT, "return_code"), PropertyInfo(Variant::INT, "base_addr"), PropertyInfo(Variant::ARRAY, "data")));
