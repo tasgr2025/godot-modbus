@@ -33,6 +33,8 @@ public:
     int           stop_bits = 1);
     /** Завершает соединения. После вызова все дескрипторы становятся недостоверными. */
     void close();
+    String get_libmodbus_version() const { return String(LIBMODBUS_VERSION_STRING); }
+    ~ModbusRtu() { close(); }
     Error flush();
     Error set_debug(bool is_debug);
     Error report_slave_id(Array resp);

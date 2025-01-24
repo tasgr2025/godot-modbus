@@ -66,6 +66,7 @@ void ModbusRtu::_bind_methods() {
     ClassDB::bind_method(D_METHOD("set_byte_timeout", "val"),       &ModbusRtu::set_byte_timeout);
     ClassDB::bind_method(D_METHOD("get_error_recovery"),            &ModbusRtu::get_error_recovery);
     ClassDB::bind_method(D_METHOD("set_error_recovery", "val"),     &ModbusRtu::set_error_recovery);
+    ClassDB::bind_method(D_METHOD("get_libmodbus_version"),         &ModbusRtu::get_libmodbus_version);
 }
 
 
