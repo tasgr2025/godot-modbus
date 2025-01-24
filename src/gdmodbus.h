@@ -51,10 +51,10 @@ public:
     Error set_socket(int s);
     int get_socket();
     bool get_error_recovery();
-    bool is_open() const {return ctx != nullptr;}
+    bool is_open() const { return ctx != nullptr; }
 protected:
     static void _bind_methods();
-    String _to_string() const {return String("<ModbusRtu: {_}>").format(this);}
+    String _to_string() const { return String("<ModbusRtu: {_}>").format(this); }
     modbus_t *ctx = nullptr;
 };
 
@@ -87,6 +87,7 @@ class ModbusClientRtu : public ModbusRtu
 {
     GDCLASS(ModbusClientRtu, ModbusRtu);
 public:
+    ~ModbusClientRtu();
     Error read(int base_addr, int count, Array resp);
     Error read_bits(int base_addr, int count, Array resp);
     Error read_input(int base_addr, int count, Array resp);
@@ -104,7 +105,7 @@ protected:
     Error thread_run();
     Error thread_stop();
     static void _bind_methods();
-    String _to_string() const {return String("<ModbusClientRtu: {_}>").format(this);}
+    String _to_string() const { return String("<ModbusClientRtu: {_}>").format(this); }
     std::mutex mutex;
     Thread thread;
     std::mutex cv_mutex;
@@ -180,7 +181,7 @@ protected:
     static void thread_proc(void* arg);
     modbus_mapping_t *mb_mapping = nullptr;
     uint8_t *query = nullptr;
-    String _to_string() const {return String("<ModbusServerRtu: {_}>").format(this);}
+    String _to_string() const { return String("<ModbusServerRtu: {_}>").format(this); }
     Thread thread;
     std::mutex mutex;
     std::atomic<bool> run_thread {true};

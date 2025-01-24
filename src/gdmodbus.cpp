@@ -88,7 +88,7 @@ void ModbusClientRtu::thread_proc(void *arg) {
         self->mutex.unlock();
         if (sz == 0) {
             self->call_deferred(sn_emit_signal, sn_queue_empty);
-            {    std::unique_lock lk(self->cv_mutex);
+            {    std::unique_lock<std::mutex> lk(self->cv_mutex);
                  self->cv.wait(lk, [self]{ return self->resume_thread; });
                  self->resume_thread = false; }
             self->cv.notify_one();
@@ -147,7 +147,7 @@ Error ModbusClientRtu::thread_stop() {
         return Error::FAILED;
     }
     run_thread = false;
-    {   std::lock_guard lk(cv_mutex);
+    {   std::lock_guard<std::mutex> lk(cv_mutex);
         resume_thread = true; }
     cv.notify_one();
     thread.wait_to_finish();
@@ -193,7 +193,7 @@ void ModbusClientRtu::push_request(TaskCode task_code, int base_addr, int count)
     mutex.lock();
     queue.push_back(item);
     mutex.unlock();
-    {   std::lock_guard lk(cv_mutex);
+    {   std::lock_guard<std::mutex> lk(cv_mutex);
         resume_thread = true; }
     cv.notify_one();
 }
@@ -211,7 +211,7 @@ void ModbusClientRtu::push_request(TaskCode task_code, int base_addr, const Arra
     mutex.lock();
     queue.push_back(item);
     mutex.unlock();
-    {   std::lock_guard lk(cv_mutex);
+    {   std::lock_guard<std::mutex> lk(cv_mutex);
         resume_thread = true; }
     cv.notify_one();
 }
@@ -475,7 +475,7 @@ bool ModbusRtu::get_error_recovery() {
    if (rc == -1) {
         return false;
    }
-   return rc == MODBUS_ERROR_RECOVERY_LINK | MODBUS_ERROR_RECOVERY_PROTOCOL;
+   return rc == (MODBUS_ERROR_RECOVERY_LINK | MODBUS_ERROR_RECOVERY_PROTOCOL);
 }
 
 
