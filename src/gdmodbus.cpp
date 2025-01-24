@@ -233,6 +233,11 @@ void ModbusClientRtu::push_request(TaskCode task_code, int base_addr, const Arra
 }
 
 
+ModbusClientRtu::~ModbusClientRtu() {
+    thread_stop();
+}
+
+
 Error ModbusClientRtu::read(int base_addr, int count, Array resp) {
     resp.clear();
     if ((base_addr < 0) || (count < 0)) {
