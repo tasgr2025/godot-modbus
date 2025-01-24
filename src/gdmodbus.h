@@ -141,13 +141,13 @@ public:
     Error thread_stop();
     bool is_open() const {return ctx != nullptr && mb_mapping != nullptr;}
     /** Возвращает текущие значения битов */
-    Dictionary get_bits() const;
+    Dictionary get_bits();
     /** Возвращает текущие значения входных битов */
-    Dictionary get_input_bits() const;
+    Dictionary get_input_bits();
     /** Возвращает текущие значения регистров */
-    Dictionary get_registers() const;
+    Dictionary get_registers();
     /** Возвращает текущие значения входных регистров */
-    Dictionary get_input_registers() const;
+    Dictionary get_input_registers();
     /** Устанавливает текущие значения битов */
     Error set_bits(const Variant &dic);
     /** Устанавливает текущие значения входных битов */
@@ -182,7 +182,7 @@ protected:
     uint8_t *query = nullptr;
     String _to_string() const {return String("<ModbusServerRtu: {_}>").format(this);}
     Thread thread;
-    Mutex mutex;
+    std::mutex mutex;
     std::atomic<bool> run_thread {true};
     std::atomic<uint32_t> udelay {1000U};
 };

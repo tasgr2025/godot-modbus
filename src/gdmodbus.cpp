@@ -81,7 +81,9 @@ void ModbusClientRtu::thread_proc(void *arg) {
     ModbusClientRtu* self = static_cast<ModbusClientRtu*>(arg);
     self->call_deferred(sn_emit_signal, sn_thread_run);
     while (self->run_thread) {
-        self->mutex.lock();
+        if (!self->mutex.try_lock()) {
+            continue;
+        }
         size_t sz = self->queue.size();
         self->mutex.unlock();
         if (sz == 0) {
@@ -92,7 +94,9 @@ void ModbusClientRtu::thread_proc(void *arg) {
             self->cv.notify_one();
             continue;
         }
-        self->mutex.lock();
+        if (!self->mutex.try_lock()) {
+            continue;
+        }
         TaskItem item (self->queue.get(0));
         self->queue.pop_front();
         switch(item.code) {
@@ -571,8 +575,7 @@ Error ModbusServerRtu::process() {
         return Error::FAILED;
     }
     call_deferred(sn_emit_signal, sn_receive);
-    int rsp_length = compute_response_length_from_request(ctx, query);
-    if (modbus_reply(ctx, query, rsp_length, mb_mapping) == -1) {
+    if (modbus_reply(ctx, query, rc, mb_mapping) == -1) {
         call_deferred(sn_emit_signal, sn_reply_failed);
         return Error::FAILED;
     }
@@ -604,9 +607,11 @@ Error ModbusServerRtu::thread_stop() {
 void ModbusServerRtu::thread_proc(void *arg) {
     ModbusServerRtu* self = static_cast<ModbusServerRtu*>(arg);
     while(self->run_thread) {
-        self->mutex.lock();
-        Error rc = self->process();
-        self->mutex.unlock();
+        Error rc = Error::OK;
+        if (self->mutex.try_lock()) {
+            rc = self->process();
+            self->mutex.unlock();
+        }
         if ((rc == Error::FAILED) || (rc == Error::OK)) {
             OS::get_singleton()->delay_usec(self->udelay);
         }
@@ -614,7 +619,7 @@ void ModbusServerRtu::thread_proc(void *arg) {
 }
 
 
-Dictionary ModbusServerRtu::get_bits() const {
+Dictionary ModbusServerRtu::get_bits() {
     Dictionary dic;
     mutex.lock();
     for (int i = mb_mapping->start_bits; i < mb_mapping->nb_bits; i ++) {
@@ -625,7 +630,7 @@ Dictionary ModbusServerRtu::get_bits() const {
 }
 
 
-Dictionary ModbusServerRtu::get_input_bits() const {
+Dictionary ModbusServerRtu::get_input_bits() {
     Dictionary dic;
     mutex.lock();
     for (int i = mb_mapping->start_input_bits; i < mb_mapping->nb_input_bits; i ++) {
@@ -636,7 +641,7 @@ Dictionary ModbusServerRtu::get_input_bits() const {
 }
 
 
-Dictionary ModbusServerRtu::get_registers() const {
+Dictionary ModbusServerRtu::get_registers() {
     Dictionary dic;
     mutex.lock();
     for (int i = mb_mapping->start_registers; i < mb_mapping->nb_registers; i ++) {
@@ -647,7 +652,7 @@ Dictionary ModbusServerRtu::get_registers() const {
 }
 
 
-Dictionary ModbusServerRtu::get_input_registers() const {
+Dictionary ModbusServerRtu::get_input_registers() {
     Dictionary dic;
     mutex.lock();
     for (int i = mb_mapping->start_input_registers; i < mb_mapping->nb_input_registers; i ++) {
