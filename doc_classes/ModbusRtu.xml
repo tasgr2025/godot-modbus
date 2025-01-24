@@ -45,6 +45,12 @@
 				Длительность времени, используемого для ожидания индикации. Индикация - это термин, используемый протоколом Modbus для обозначения запроса, полученного сервером. Значение по умолчанию равно нулю, это означает, что сервер будет ждать вечно.
 			</description>
 		</method>
+		<method name="get_libmodbus_version" qualifiers="const">
+			<return type="String" />
+			<description>
+				Возвращает версию [b]libmodbus[/b].
+			</description>
+		</method>
 		<method name="get_response_timeout">
 			<return type="float" />
 			<description>
