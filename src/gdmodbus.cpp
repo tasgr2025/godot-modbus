@@ -185,6 +185,22 @@ void ModbusClientRtu::request_write_bits(int base_addr, const Array &resp) {
 }
 
 
+int ModbusClientRtu::get_queue_size() {
+    int count = 0;
+    mutex.lock();
+    count = queue.size();
+    mutex.unlock();
+	return count;
+}
+
+
+void ModbusClientRtu::queue_clear() {
+    mutex.lock();
+    queue.clear();
+    mutex.unlock();
+}
+
+
 void ModbusClientRtu::push_request(TaskCode task_code, int base_addr, int count) {
     TaskItem item;
     item.code = task_code;

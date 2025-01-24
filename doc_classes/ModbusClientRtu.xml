@@ -15,6 +15,12 @@
 				Возвращает количество запросов в очереди.
 			</description>
 		</method>
+		<method name="queue_clear">
+			<return type="void" />
+			<description>
+				Очищает очередь запросов.
+			</description>
+		</method>
 		<method name="read">
 			<return type="int" enum="Error" />
 			<param index="0" name="base_addr" type="int" />

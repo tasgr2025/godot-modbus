@@ -100,6 +100,8 @@ public:
     void request_read_input_bits(int base_addr, int count);
     void request_write(int base_addr, const Array &resp);
     void request_write_bits(int base_addr, const Array &resp);
+    int get_queue_size();
+    void queue_clear();
 protected:
     static void thread_proc(void *arg);
     Error thread_run();
